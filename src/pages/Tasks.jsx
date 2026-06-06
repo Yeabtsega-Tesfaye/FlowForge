@@ -1,14 +1,42 @@
-import { motion } from "framer-motion";
+import { useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 
 import PageHeader from "../components/ui/PageHeader";
+import Button from "../components/ui/Button";
+
+import TaskCard from "../components/tasks/TaskCard";
+import TaskFilterBar from "../components/tasks/TaskFilterBar";
+import TaskModal from "../components/tasks/TaskModal";
+
+import { useTaskStore } from "../store/taskStore";
 
 function Tasks() {
+  const [open, setOpen] = useState(false);
+
+  const tasks = useTaskStore(
+    (state) => state.tasks
+  );
+
+  const filter = useTaskStore(
+    (state) => state.filter
+  );
+
+  const filteredTasks = useMemo(() => {
+    if (filter === "all") {
+      return tasks;
+    }
+
+    return tasks.filter(
+      (task) => task.status === filter
+    );
+  }, [tasks, filter]);
+
   return (
     <div>
+      {/* Header */}
       <div
         className="
-          mb-8 flex flex-col gap-4
+          mb-6 flex flex-col gap-4
           sm:flex-row sm:items-center
           sm:justify-between
         "
@@ -18,45 +46,58 @@ function Tasks() {
           description="Manage your workflow and productivity."
         />
 
-        <button
-          className="
-            inline-flex items-center gap-2
-            rounded-xl bg-blue-600
-            px-4 py-2.5 text-sm
-            font-medium text-white
-            transition hover:bg-blue-500
-          "
+        <Button
+          icon={Plus}
+          onClick={() => setOpen(true)}
         >
-          <Plus size={18} />
           New Task
-        </button>
+        </Button>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+      {/* Filters */}
+      <TaskFilterBar />
+
+      {/* Grid */}
+      <div
         className="
-          rounded-2xl border border-zinc-800
-          bg-zinc-900/60 p-6
+          mt-6 grid gap-6
+          md:grid-cols-2
+          xl:grid-cols-3
         "
       >
+        {filteredTasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+          />
+        ))}
+      </div>
+
+      {/* Empty State */}
+      {filteredTasks.length === 0 && (
         <div
           className="
-            flex h-[500px] flex-col
-            items-center justify-center
-            rounded-xl border border-dashed
-            border-zinc-700
+            mt-10 rounded-2xl
+            border border-dashed
+            border-zinc-800 p-12
+            text-center
           "
         >
           <h3 className="text-lg font-semibold text-white">
-            No Tasks Yet
+            No Tasks Found
           </h3>
 
-          <p className="mt-2 text-sm text-zinc-500">
-            Task management features will appear here.
+          <p className="mt-2 text-zinc-500">
+            Try changing filters or create a task.
           </p>
         </div>
-      </motion.div>
+      )}
+
+      {/* Modal */}
+      <TaskModal
+        open={open}
+        onClose={() => setOpen(false)}
+      />
     </div>
   );
 }

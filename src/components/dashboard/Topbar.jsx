@@ -4,6 +4,8 @@ import {
   Search,
 } from "lucide-react";
 
+import ThemeToggle from "../ui/ThemeToggle";
+
 function Topbar({ setSidebarOpen }) {
   return (
     <header
@@ -60,6 +62,8 @@ function Topbar({ setSidebarOpen }) {
 
       {/* Right Side */}
       <div className="ml-auto flex items-center gap-3">
+        <ThemeToggle />
+        
         {/* Notifications */}
         <button
           className="
