@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 import PageHeader from "../components/ui/PageHeader";
 
 import StatCard from "../components/dashboard/StatCard";
@@ -12,49 +14,97 @@ import {
 
 function Dashboard() {
   return (
-    <div>
-      {/* Header */}
-      <PageHeader
-        title="Dashboard"
-        description="Overview of your productivity and activity."
-      />
-
-      {/* Stats */}
+    <div className="relative pb-10">
+      {/* Ambient Background */}
       <div
         className="
-          grid gap-6
-          md:grid-cols-2
-          xl:grid-cols-4
+          pointer-events-none absolute
+          inset-0 overflow-hidden
         "
       >
-        {statsData.map((stat) => (
-          <StatCard
-            key={stat.title}
-            title={stat.title}
-            value={stat.value}
-            change={stat.change}
-          />
-        ))}
+        <div
+          className="
+            absolute left-0 top-0
+            h-96 w-96 rounded-full
+            bg-blue-500/[0.05]
+            blur-3xl
+          "
+        />
+
+        <div
+          className="
+            absolute right-0 top-40
+            h-[28rem] w-[28rem]
+            rounded-full
+            bg-purple-500/[0.05]
+            blur-3xl
+          "
+        />
       </div>
 
-      {/* Main Grid */}
-      <div
-        className="
-          mt-6 grid gap-6
-          xl:grid-cols-3
-        "
-      >
-        {/* Chart */}
-        <div className="xl:col-span-2">
-          <ChartCard
-            data={productivityData}
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <PageHeader
+            title="Dashboard"
+            description="Overview of your productivity, workflow, and activity insights."
           />
-        </div>
+        </motion.div>
 
-        {/* Activity */}
-        <ActivityFeed
-          activities={activityData}
-        />
+        {/* Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.05,
+            duration: 0.4,
+          }}
+          className="
+            mt-8 grid gap-6
+            md:grid-cols-2
+            xl:grid-cols-4
+          "
+        >
+          {statsData.map((stat) => (
+            <StatCard
+              key={stat.title}
+              title={stat.title}
+              value={stat.value}
+              change={stat.change}
+            />
+          ))}
+        </motion.div>
+
+        {/* Main Content Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.1,
+            duration: 0.45,
+          }}
+          className="
+            mt-8 grid gap-6
+            xl:grid-cols-3
+          "
+        >
+          {/* Chart Section */}
+          <div className="xl:col-span-2">
+            <ChartCard
+              data={productivityData}
+            />
+          </div>
+
+          {/* Activity Feed */}
+          <ActivityFeed
+            activities={activityData}
+          />
+        </motion.div>
       </div>
     </div>
   );

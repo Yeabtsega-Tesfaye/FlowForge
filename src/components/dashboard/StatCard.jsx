@@ -8,22 +8,59 @@ function StatCard({
   return (
     <motion.div
       whileHover={{ y: -4 }}
+      transition={{
+        type: "spring",
+        stiffness: 260,
+        damping: 18,
+      }}
       className="
-        rounded-2xl border border-zinc-800
-        bg-zinc-900/60 p-6
-        backdrop-blur-sm
+        group relative overflow-hidden
+
+        rounded-3xl border border-white/8
+
+        bg-white/[0.03]
+        p-6
+
+        backdrop-blur-xl
+
+        card-hover
       "
     >
-      <div className="flex items-start justify-between">
+      {/* Ambient Glow */}
+      <div
+        className="
+          absolute inset-0
+
+          bg-gradient-to-br
+          from-blue-500/[0.08]
+          via-transparent
+          to-purple-500/[0.06]
+
+          opacity-0
+          transition-opacity duration-500
+
+          group-hover:opacity-100
+        "
+      />
+
+      {/* Noise Texture */}
+      <div className="noise-overlay absolute inset-0" />
+
+      <div className="relative flex items-start justify-between">
         <div>
-          <p className="text-sm text-zinc-400">
+          <p
+            className="
+              text-sm font-medium
+              tracking-tight text-zinc-400
+            "
+          >
             {title}
           </p>
 
           <h3
             className="
-              mt-3 text-3xl
-              font-bold tracking-tight
+              mt-4 text-4xl
+              font-semibold tracking-tight
               text-white
             "
           >
@@ -31,16 +68,42 @@ function StatCard({
           </h3>
         </div>
 
+        {/* Change Badge */}
         <div
           className="
-            rounded-full bg-emerald-500/15
-            px-3 py-1 text-xs
-            font-medium text-emerald-400
+            rounded-full border
+            border-emerald-500/10
+
+            bg-emerald-500/10
+
+            px-3 py-1.5
+
+            text-xs font-semibold
+            tracking-tight
+
+            text-emerald-300
+
+            shadow-lg
+            shadow-emerald-500/10
           "
         >
           {change}
         </div>
       </div>
+
+      {/* Bottom Accent Line */}
+      <div
+        className="
+          absolute bottom-0 left-0
+
+          h-px w-full
+
+          bg-gradient-to-r
+          from-blue-500/0
+          via-blue-500/40
+          to-purple-500/0
+        "
+      />
     </motion.div>
   );
 }
