@@ -10,38 +10,86 @@ function Button({
   ...props
 }) {
   const variants = {
-    primary:
-      "bg-blue-600 hover:bg-blue-500 text-white",
+    primary: `
+      border border-blue-500/20
 
-    secondary:
-      `
-      bg-zinc-800 text-white
-      hover:bg-zinc-700
-      border border-zinc-700
-      `,
+      bg-gradient-to-b
+      from-blue-500
+      to-blue-600
 
-    ghost:
-      `
-      bg-transparent text-zinc-300
-      hover:bg-zinc-800 hover:text-white
-      `,
+      text-white
+
+      shadow-lg
+      shadow-blue-500/20
+
+      hover:from-blue-400
+      hover:to-blue-500
+
+      hover:shadow-blue-500/30
+    `,
+
+    secondary: `
+      border border-white/10
+
+      bg-white/[0.04]
+
+      text-white
+
+      hover:bg-white/[0.07]
+      hover:border-white/15
+    `,
+
+    ghost: `
+      border border-transparent
+
+      bg-transparent
+
+      text-zinc-300
+
+      hover:bg-white/[0.05]
+      hover:text-white
+    `,
   };
 
   const sizes = {
-    sm: "px-3 py-2 text-sm",
-    md: "px-4 py-2.5 text-sm",
-    lg: "px-5 py-3 text-base",
+    sm: `
+      h-10 px-4 text-sm
+      rounded-xl
+    `,
+
+    md: `
+      h-11 px-5 text-sm
+      rounded-2xl
+    `,
+
+    lg: `
+      h-12 px-6 text-base
+      rounded-2xl
+    `,
   };
 
   return (
     <motion.button
-      whileTap={{ scale: 0.98 }}
+      whileTap={{ scale: 0.97 }}
+      whileHover={{ y: -1 }}
+      transition={{
+        type: "spring",
+        stiffness: 400,
+        damping: 17,
+      }}
       className={`
-        inline-flex items-center justify-center gap-2
-        rounded-xl font-medium
-        transition-all duration-200
+        relative inline-flex
+        items-center justify-center
+        gap-2 overflow-hidden
+
+        font-medium tracking-tight
+
+        backdrop-blur-xl
+
+        transition-all duration-300
+
         disabled:cursor-not-allowed
-        disabled:opacity-60
+        disabled:opacity-50
 
         ${variants[variant]}
         ${sizes[size]}
@@ -50,19 +98,46 @@ function Button({
       disabled={loading}
       {...props}
     >
-      {loading ? (
-        <div
-          className="
-            h-4 w-4 animate-spin
-            rounded-full border-2
-            border-white/30 border-t-white
-          "
-        />
-      ) : (
-        Icon && <Icon size={18} />
-      )}
+      {/* Shine */}
+      <div
+        className="
+          absolute inset-0
 
-      {children}
+          opacity-0 transition-opacity
+          duration-500
+
+          hover:opacity-100
+
+          bg-gradient-to-r
+          from-white/0
+          via-white/10
+          to-white/0
+        "
+      />
+
+      <span
+        className="
+          relative z-10
+          inline-flex items-center gap-2
+        "
+      >
+        {loading ? (
+          <div
+            className="
+              h-4 w-4 animate-spin
+              rounded-full
+
+              border-2
+              border-white/30
+              border-t-white
+            "
+          />
+        ) : (
+          Icon && <Icon size={18} />
+        )}
+
+        {children}
+      </span>
     </motion.button>
   );
 }

@@ -1,4 +1,9 @@
-import { Trash2, CheckCircle2 } from "lucide-react";
+import {
+  Trash2,
+  CheckCircle2,
+  CalendarDays,
+} from "lucide-react";
+
 import { motion } from "framer-motion";
 
 import Badge from "../ui/Badge";
@@ -31,37 +36,135 @@ function TaskCard({ task }) {
 
   return (
     <motion.div
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -5 }}
+      transition={{
+        type: "spring",
+        stiffness: 260,
+        damping: 20,
+      }}
       className="
-        rounded-2xl border border-zinc-800
-        bg-zinc-900/60 p-5
+        group relative overflow-hidden
+
+        rounded-3xl border border-white/8
+
+        bg-white/[0.03]
+        p-6
+
+        backdrop-blur-xl
+
+        transition-all duration-300
+
+        hover:border-white/10
       "
     >
+      {/* Glow */}
+      <div
+        className="
+          absolute inset-0
+
+          bg-gradient-to-br
+          from-blue-500/[0.05]
+          to-purple-500/[0.05]
+
+          opacity-0 transition-opacity
+          duration-500
+
+          group-hover:opacity-100
+        "
+      />
+
+      <div className="noise-overlay absolute inset-0" />
+
+      {/* Top Accent */}
+      <div
+        className="
+          absolute left-0 top-0
+          h-px w-full
+
+          bg-gradient-to-r
+          from-blue-500/0
+          via-blue-500/40
+          to-purple-500/0
+        "
+      />
+
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="text-lg font-semibold text-white">
+      <div
+        className="
+          relative flex items-start
+          justify-between gap-4
+        "
+      >
+        <div className="flex-1">
+          <div
+            className="
+              inline-flex items-center
+              rounded-full
+
+              border border-white/5
+              bg-white/[0.03]
+
+              px-2.5 py-1
+
+              text-[11px]
+              font-medium
+              uppercase tracking-[0.12em]
+
+              text-zinc-500
+            "
+          >
+            Task
+          </div>
+
+          <h3
+            className="
+              mt-4 text-xl
+              font-semibold
+              tracking-tight text-white
+            "
+          >
             {task.title}
           </h3>
 
-          <p className="mt-2 text-sm text-zinc-400">
+          <p
+            className="
+              mt-3 text-sm
+              leading-relaxed
+              text-zinc-400
+            "
+          >
             {task.description}
           </p>
         </div>
 
-        <button
+        {/* Delete */}
+        <motion.button
+          whileTap={{ scale: 0.92 }}
           onClick={() => deleteTask(task.id)}
           className="
-            text-zinc-500 transition
-            hover:text-red-400
+            relative z-10
+
+            rounded-2xl border
+            border-white/5
+
+            bg-white/[0.03]
+            p-2.5
+
+            text-zinc-500
+
+            transition-all duration-300
+
+            hover:border-red-500/20
+            hover:bg-red-500/10
+            hover:text-red-300
           "
         >
-          <Trash2 size={18} />
-        </button>
+          <Trash2 size={16} />
+        </motion.button>
       </div>
 
       {/* Badges */}
-      <div className="mt-5 flex flex-wrap gap-2">
+      <div className="relative mt-6 flex flex-wrap gap-2">
         <Badge variant={priorityVariant}>
           {task.priority}
         </Badge>
@@ -70,13 +173,43 @@ function TaskCard({ task }) {
           {task.status}
         </Badge>
 
-        <Badge>
+        <div
+          className="
+            inline-flex items-center gap-2
+
+            rounded-full border
+            border-white/5
+
+            bg-white/[0.03]
+
+            px-3 py-1.5
+
+            text-xs text-zinc-400
+          "
+        >
+          <CalendarDays size={13} />
+
           {task.dueDate}
-        </Badge>
+        </div>
       </div>
 
-      {/* Actions */}
-      <div className="mt-6">
+      {/* Footer */}
+      <div
+        className="
+          relative mt-8
+          flex items-center
+          justify-between
+        "
+      >
+        <div
+          className="
+            text-xs tracking-tight
+            text-zinc-500
+          "
+        >
+          FlowForge Task
+        </div>
+
         <Button
           size="sm"
           variant={
