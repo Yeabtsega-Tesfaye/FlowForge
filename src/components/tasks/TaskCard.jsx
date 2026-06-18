@@ -34,6 +34,18 @@ function TaskCard({ task }) {
       ? "info"
       : "default";
 
+  const buttonText =
+  task.status === "todo"
+    ? "Start Task"
+    : task.status === "in-progress"
+    ? "Finish Task"
+    : "Reset";
+
+const buttonVariant =
+  task.status === "completed"
+    ? "secondary"
+    : "primary";
+
   return (
     <motion.div
       whileHover={{ y: -5 }}
@@ -210,22 +222,16 @@ function TaskCard({ task }) {
           FlowForge Task
         </div>
 
-        <Button
-          size="sm"
-          variant={
-            task.status === "completed"
-              ? "secondary"
-              : "primary"
-          }
-          icon={CheckCircle2}
-          onClick={() =>
-            toggleTaskStatus(task.id)
-          }
-        >
-          {task.status === "completed"
-            ? "Mark Todo"
-            : "Complete"}
-        </Button>
+<Button
+  size="sm"
+  variant={buttonVariant}
+  icon={CheckCircle2}
+onClick={() => {
+  toggleTaskStatus(task.id);
+}}
+>
+  {buttonText}
+</Button>
       </div>
     </motion.div>
   );

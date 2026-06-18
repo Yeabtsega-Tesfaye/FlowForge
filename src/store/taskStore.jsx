@@ -1,9 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+import { taskService } from "../services/taskService";
+
+import { useNotificationStore } from "./notificationStore";
+
 export const useTaskStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       tasks: [
         {
           id: 1,
@@ -18,43 +22,108 @@ export const useTaskStore = create(
 
       filter: "all",
 
+      loading: false,
+
       setFilter: (filter) =>
         set({
           filter,
         }),
 
-      addTask: (task) =>
-        set((state) => ({
-          tasks: [
-            {
-              id: Date.now(),
-              ...task,
-            },
-            ...state.tasks,
-          ],
-        })),
+      loadTasks: async () => {
+        set({
+          loading: true,
+        });
 
-      deleteTask: (id) =>
-        set((state) => ({
-          tasks: state.tasks.filter(
-            (task) => task.id !== id
-          ),
-        })),
+        const tasks =
+          await taskService.getTasks(
+            get().tasks
+          );
 
-      toggleTaskStatus: (id) =>
-        set((state) => ({
-          tasks: state.tasks.map((task) =>
-            task.id === id
-              ? {
-                  ...task,
-                  status:
-                    task.status === "completed"
-                      ? "todo"
-                      : "completed",
-                }
-              : task
-          ),
-        })),
+        set({
+          tasks,
+          loading: false,
+        });
+      },
+
+addTask: (task) => {
+  useNotificationStore
+    .getState()
+    .addNotification({
+      title: "Task Created",
+      message: `${task.title} added successfully`,
+      type: "success",
+    });
+
+  set((state) => ({
+    tasks: [
+      {
+        id: Date.now(),
+        ...task,
+      },
+      ...state.tasks,
+    ],
+  }));
+},
+
+deleteTask: (id) => {
+  const task = get().tasks.find(
+    (task) => task.id === id
+  );
+
+  useNotificationStore
+    .getState()
+    .addNotification({
+      title: "Task Deleted",
+      message: `${task.title} removed`,
+      type: "error",
+    });
+
+  set((state) => ({
+    tasks: state.tasks.filter(
+      (task) => task.id !== id
+    ),
+  }));
+},
+
+      toggleTaskStatus:  async (id) => {
+  const task = get().tasks.find(
+    (task) => task.id === id
+  );
+
+  if (!task) return;
+
+  const nextStatus =
+    task.status === "todo"
+      ? "in-progress"
+      : task.status === "in-progress"
+      ? "completed"
+      : "todo";
+
+  const updatedTask = {
+    ...task,
+    status: nextStatus,
+  };
+
+  await taskService.updateTask(
+    updatedTask
+  );
+
+  useNotificationStore
+    .getState()
+    .addNotification({
+      title: "Task Updated",
+      message: `${task.title} → ${nextStatus}`,
+      type: "info",
+    });
+
+  set((state) => ({
+    tasks: state.tasks.map((task) =>
+      task.id === id
+        ? updatedTask
+        : task
+    ),
+  }));
+      },
     }),
     {
       name: "flowforge-tasks",

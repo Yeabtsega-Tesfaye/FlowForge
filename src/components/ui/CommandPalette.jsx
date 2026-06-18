@@ -17,9 +17,11 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import { commandItems } from "../../data/commandPalette";
+import { useCommandPaletteStore } from "../../store/commandPaletteStore";
 
 function CommandPalette() {
-  const [open, setOpen] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const { open, openPalette, closePalette } = useCommandPaletteStore();
 
   const [query, setQuery] = useState("");
 
@@ -28,17 +30,9 @@ function CommandPalette() {
   // Keyboard Shortcut
   useEffect(() => {
     const down = (e) => {
-      if (
-        (e.metaKey || e.ctrlKey) &&
-        e.key.toLowerCase() === "k"
-      ) {
-        e.preventDefault();
-
-        setOpen((prev) => !prev);
-      }
-
+      // FIXED: Removed the Ctrl+K listener from here so it doesn't fight with App.jsx
       if (e.key === "Escape") {
-        setOpen(false);
+        closePalette();
       }
     };
 
@@ -49,7 +43,7 @@ function CommandPalette() {
         "keydown",
         down
       );
-  }, []);
+  }, [closePalette]);
 
   // Filtered Commands
   const filteredItems = useMemo(() => {
@@ -63,7 +57,7 @@ function CommandPalette() {
   const handleSelect = (path) => {
     navigate(path);
 
-    setOpen(false);
+    closePalette();
 
     setQuery("");
   };
@@ -77,7 +71,7 @@ function CommandPalette() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setOpen(false)}
+            onClick={() => closePalette()}
             className="
               fixed inset-0 z-[120]
 
@@ -130,7 +124,7 @@ function CommandPalette() {
   transition={{
     duration: 0.18,
   }}
-  onClick={() => setOpen(false)}
+  onClick={() => closePalette()}
   className="
     fixed inset-0
     z-[130]

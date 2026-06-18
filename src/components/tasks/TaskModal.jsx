@@ -11,11 +11,16 @@ import Input from "../ui/Input";
 import Button from "../ui/Button";
 
 import { useTaskStore } from "../../store/taskStore";
+import { useToastStore } from "../../store/toastStore";
 
 function TaskModal({ open, onClose }) {
   const addTask = useTaskStore(
     (state) => state.addTask
   );
+
+  const addToast = useToastStore(
+  (state) => state.addToast
+);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -24,24 +29,30 @@ function TaskModal({ open, onClose }) {
     dueDate: "",
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    addTask({
-      ...formData,
-      status: "todo",
-    });
+  await addTask({
+    ...formData,
+    status: "todo",
+  });
 
-    setFormData({
-      title: "",
-      description: "",
-      priority: "medium",
-      dueDate: "",
-    });
+  addToast({
+    title: "Task Created",
+    message:
+      "Your new task has been added successfully.",
+    type: "success",
+  });
 
-    onClose();
-  };
+  setFormData({
+    title: "",
+    description: "",
+    priority: "medium",
+    dueDate: "",
+  });
 
+  onClose();
+};
   return (
     <AnimatePresence>
       {open && (

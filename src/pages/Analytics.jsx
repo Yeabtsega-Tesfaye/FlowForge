@@ -1,42 +1,105 @@
+import { motion } from "framer-motion";
 import PageHeader from "../components/ui/PageHeader";
+import AnalyticsStatCard from "../components/analytics/AnalyticsStatCard";
+import AreaChartCard from "../components/analytics/AreaChartCard";
+import BarChartCard from "../components/analytics/BarChartCard";
+import DonutChartCard from "../components/analytics/DonutChartCard";
+import InsightsCard from "../components/analytics/InsightsCard";
+import { productivityData } from "../data/analytics";
+
+const derivedStats = [
+  {
+    label: "Completion rate",
+    value: "75%",
+    sub: "+5% vs last week",
+    subColor: "text-emerald-400",
+    glow: "from-emerald-500/[0.08]",
+  },
+  {
+    label: "Daily average",
+    value: "6.0",
+    sub: "tasks per day",
+    subColor: "text-blue-400",
+    glow: "from-blue-500/[0.08]",
+  },
+  {
+    label: "Best day",
+    value: "Thu",
+    sub: "9 tasks completed",
+    subColor: "text-purple-400",
+    glow: "from-purple-500/[0.08]",
+  },
+  {
+    label: "Focus efficiency",
+    value: "2.4×",
+    sub: "tasks per focus hour",
+    subColor: "text-amber-400",
+    glow: "from-amber-500/[0.08]",
+  },
+];
 
 function Analytics() {
   return (
-    <div>
-      <PageHeader
-        title="Analytics"
-        description="Track productivity trends and insights."
-      />
+    <div className="relative pb-10">
 
-      <div
-        className="
-          grid gap-6
-          lg:grid-cols-2
-        "
-      >
-        {[1, 2, 3, 4].map((item) => (
-          <div
-            key={item}
-            className="
-              rounded-2xl border border-zinc-800
-              bg-zinc-900/60 p-6
-            "
-          >
-            <div className="h-5 w-40 rounded bg-zinc-800" />
+      {/* Ambient */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -left-16 top-0 h-96 w-96 rounded-full bg-blue-500/[0.05] blur-3xl" />
+        <div className="absolute -right-8 top-40 h-[28rem] w-[28rem] rounded-full bg-purple-500/[0.05] blur-3xl" />
+      </div>
 
-            <div
-              className="
-                mt-6 flex h-64 items-center
-                justify-center rounded-xl
-                border border-dashed border-zinc-700
-              "
-            >
-              <p className="text-zinc-500">
-                Analytics chart placeholder
-              </p>
-            </div>
-          </div>
-        ))}
+      <div className="relative z-10">
+
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <PageHeader
+            title="Analytics"
+            description="Trends, breakdowns, and insights across your workflow."
+          />
+        </motion.div>
+
+        {/* Stat Row */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05, duration: 0.4 }}
+          className="mt-8 grid grid-cols-2 gap-3 xl:grid-cols-4"
+        >
+          {derivedStats.map((s) => (
+            <AnalyticsStatCard key={s.label} {...s} />
+          ))}
+        </motion.div>
+
+{/* Area Chart + Donut side by side on xl */}
+<motion.div
+  initial={{ opacity: 0, y: 12 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.1, duration: 0.45 }}
+  className="mt-6 grid gap-6 xl:grid-cols-3"
+>
+  <div className="xl:col-span-2">
+    <AreaChartCard data={productivityData} />
+  </div>
+  <div className="xl:col-span-1">
+    <DonutChartCard />
+  </div>
+</motion.div>
+
+{/* Bar Chart + Insights side by side on xl */}
+<motion.div
+  initial={{ opacity: 0, y: 12 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.15, duration: 0.45 }}
+  className="mt-6 grid gap-6 xl:grid-cols-2"
+>
+  <BarChartCard data={productivityData} />
+  <InsightsCard />
+</motion.div>
+
       </div>
     </div>
   );
