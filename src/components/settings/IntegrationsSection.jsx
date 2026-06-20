@@ -68,7 +68,7 @@ function IntegrationsSection() {
         Connected apps
       </p>
 
-      <div className="grid grid-cols-2 gap-3">
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {INTEGRATIONS.map(({ id, name, icon: Icon, color, bg }) => (
           <div
             key={id}

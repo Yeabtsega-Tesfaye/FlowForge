@@ -12,8 +12,7 @@ export const useTaskStore = create(
         {
           id: 1,
           title: "Design landing page UI",
-          description:
-            "Create modern SaaS landing page design",
+          description: "Create modern SaaS landing page design",
           priority: "high",
           status: "in-progress",
           dueDate: "2026-06-10",
@@ -21,23 +20,14 @@ export const useTaskStore = create(
       ],
 
       filter: "all",
-
       loading: false,
 
-      setFilter: (filter) =>
-        set({
-          filter,
-        }),
+      setFilter: (filter) => set({ filter }),
 
       loadTasks: async () => {
-        set({
-          loading: true,
-        });
+        set({ loading: true });
 
-        const tasks =
-          await taskService.getTasks(
-            get().tasks
-          );
+        const tasks = await taskService.getTasks(get().tasks);
 
         set({
           tasks,
@@ -45,84 +35,79 @@ export const useTaskStore = create(
         });
       },
 
-addTask: (task) => {
-  useNotificationStore
-    .getState()
-    .addNotification({
-      title: "Task Created",
-      message: `${task.title} added successfully`,
-      type: "success",
-    });
+      addTask: (task) => {
+        useNotificationStore.getState().addNotification({
+          title: "Task Created",
+          message: `${task.title} added successfully`,
+          type: "success",
+        });
 
-  set((state) => ({
-    tasks: [
-      {
-        id: Date.now(),
-        ...task,
+        set((state) => ({
+          tasks: [
+            { id: Date.now(), ...task },
+            ...state.tasks,
+          ],
+        }));
       },
-      ...state.tasks,
-    ],
-  }));
-},
 
-deleteTask: (id) => {
-  const task = get().tasks.find(
-    (task) => task.id === id
-  );
+      updateTask: async (updatedTask) => {
+        await taskService.updateTask(updatedTask);
 
-  useNotificationStore
-    .getState()
-    .addNotification({
-      title: "Task Deleted",
-      message: `${task.title} removed`,
-      type: "error",
-    });
+        useNotificationStore.getState().addNotification({
+          title: "Task Updated",
+          message: `${updatedTask.title} updated successfully`,
+          type: "info",
+        });
 
-  set((state) => ({
-    tasks: state.tasks.filter(
-      (task) => task.id !== id
-    ),
-  }));
-},
+        set((state) => ({
+          tasks: state.tasks.map((task) =>
+            task.id === updatedTask.id ? updatedTask : task
+          ),
+        }));
+      },
 
-      toggleTaskStatus:  async (id) => {
-  const task = get().tasks.find(
-    (task) => task.id === id
-  );
+      deleteTask: (id) => {
+        const task = get().tasks.find((task) => task.id === id);
 
-  if (!task) return;
+        if (task) {
+          useNotificationStore.getState().addNotification({
+            title: "Task Deleted",
+            message: `${task.title} removed`,
+            type: "error",
+          });
+        }
 
-  const nextStatus =
-    task.status === "todo"
-      ? "in-progress"
-      : task.status === "in-progress"
-      ? "completed"
-      : "todo";
+        set((state) => ({
+          tasks: state.tasks.filter((task) => task.id !== id),
+        }));
+      },
 
-  const updatedTask = {
-    ...task,
-    status: nextStatus,
-  };
+      toggleTaskStatus: async (id) => {
+        const task = get().tasks.find((task) => task.id === id);
+        if (!task) return;
 
-  await taskService.updateTask(
-    updatedTask
-  );
+        const nextStatus =
+          task.status === "todo"
+            ? "in-progress"
+            : task.status === "in-progress"
+              ? "completed"
+              : "todo";
 
-  useNotificationStore
-    .getState()
-    .addNotification({
-      title: "Task Updated",
-      message: `${task.title} → ${nextStatus}`,
-      type: "info",
-    });
+        const updatedTask = { ...task, status: nextStatus };
 
-  set((state) => ({
-    tasks: state.tasks.map((task) =>
-      task.id === id
-        ? updatedTask
-        : task
-    ),
-  }));
+        await taskService.updateTask(updatedTask);
+
+        useNotificationStore.getState().addNotification({
+          title: "Task Updated",
+          message: `${task.title} → ${nextStatus}`,
+          type: "info",
+        });
+
+        set((state) => ({
+          tasks: state.tasks.map((t) =>
+            t.id === id ? updatedTask : t
+          ),
+        }));
       },
     }),
     {

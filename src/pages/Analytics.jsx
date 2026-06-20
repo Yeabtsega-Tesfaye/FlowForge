@@ -41,13 +41,6 @@ const derivedStats = [
 function Analytics() {
   return (
     <div className="relative pb-10">
-
-      {/* Ambient */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-16 top-0 h-96 w-96 rounded-full bg-blue-500/[0.05] blur-3xl" />
-        <div className="absolute -right-8 top-40 h-[28rem] w-[28rem] rounded-full bg-purple-500/[0.05] blur-3xl" />
-      </div>
-
       <div className="relative z-10">
 
         {/* Header */}

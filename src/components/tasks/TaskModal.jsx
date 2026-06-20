@@ -1,11 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { motion, AnimatePresence } from "framer-motion";
 
-import {
-  X,
-  Sparkles,
-} from "lucide-react";
+import { X, Sparkles } from "lucide-react";
 
 import Input from "../ui/Input";
 import Button from "../ui/Button";
@@ -13,14 +10,11 @@ import Button from "../ui/Button";
 import { useTaskStore } from "../../store/taskStore";
 import { useToastStore } from "../../store/toastStore";
 
-function TaskModal({ open, onClose }) {
-  const addTask = useTaskStore(
-    (state) => state.addTask
-  );
+function TaskModal({ open, onClose, editingTask = null }) {
+  const addTask = useTaskStore((state) => state.addTask);
+  const updateTask = useTaskStore((state) => state.updateTask);
 
-  const addToast = useToastStore(
-  (state) => state.addToast
-);
+  const addToast = useToastStore((state) => state.addToast);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -29,30 +23,98 @@ function TaskModal({ open, onClose }) {
     dueDate: "",
   });
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  await addTask({
-    ...formData,
-    status: "todo",
-  });
-
-  addToast({
-    title: "Task Created",
-    message:
-      "Your new task has been added successfully.",
-    type: "success",
-  });
-
-  setFormData({
+  const [errors, setErrors] = useState({
     title: "",
     description: "",
-    priority: "medium",
     dueDate: "",
   });
 
-  onClose();
-};
+  useEffect(() => {
+    if (editingTask) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFormData({
+        title: editingTask.title,
+        description: editingTask.description,
+        priority: editingTask.priority,
+        dueDate: editingTask.dueDate,
+      });
+    } else {
+      setFormData({
+        title: "",
+        description: "",
+        priority: "medium",
+        dueDate: "",
+      });
+    }
+  }, [editingTask, open]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const newErrors = {
+      title: "",
+      description: "",
+      dueDate: "",
+    };
+
+    if (!formData.title.trim()) {
+      newErrors.title = "Title is required.";
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = "Description is required.";
+    }
+
+    if (!formData.dueDate) {
+      newErrors.dueDate = "Please choose a due date.";
+    }
+
+    setErrors(newErrors);
+
+    if (newErrors.title || newErrors.description || newErrors.dueDate) {
+      return;
+    }
+
+    if (editingTask) {
+      updateTask({
+        ...editingTask,
+        ...formData,
+      });
+
+      addToast({
+        title: "Task Updated",
+        message: "Task updated successfully.",
+        type: "info",
+      });
+    } else {
+      await addTask({
+        ...formData,
+        status: "todo",
+      });
+
+      addToast({
+        title: "Task Created",
+        message: "Your new task has been added successfully.",
+        type: "success",
+      });
+    }
+
+    setFormData({
+      title: "",
+      description: "",
+      priority: "medium",
+      dueDate: "",
+    });
+
+    setErrors({
+      title: "",
+      description: "",
+      dueDate: "",
+    });
+
+    onClose();
+  };
+
   return (
     <AnimatePresence>
       {open && (
@@ -143,7 +205,6 @@ const handleSubmit = async (e) => {
                   "
                 >
                   <Sparkles size={13} />
-
                   Productivity
                 </div>
 
@@ -154,12 +215,11 @@ const handleSubmit = async (e) => {
                     text-white
                   "
                 >
-                  Create New Task
+                  {editingTask ? "Edit Task" : "Create New Task"}
                 </h2>
 
                 <p className="mt-2 text-sm text-zinc-400">
-                  Organize your workflow and
-                  track productivity efficiently.
+                  Organize your workflow and track productivity efficiently.
                 </p>
               </div>
 
@@ -197,6 +257,7 @@ const handleSubmit = async (e) => {
                 label="Task Title"
                 placeholder="Design dashboard UI..."
                 value={formData.title}
+                error={errors.title}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -209,6 +270,7 @@ const handleSubmit = async (e) => {
                 label="Description"
                 placeholder="Describe your task objectives..."
                 value={formData.description}
+                error={errors.description}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -256,17 +318,11 @@ const handleSubmit = async (e) => {
                     focus:bg-white/[0.05]
                   "
                 >
-                  <option value="low">
-                    Low
-                  </option>
+                  <option value="low">Low</option>
 
-                  <option value="medium">
-                    Medium
-                  </option>
+                  <option value="medium">Medium</option>
 
-                  <option value="high">
-                    High
-                  </option>
+                  <option value="high">High</option>
                 </select>
               </div>
 
@@ -275,6 +331,7 @@ const handleSubmit = async (e) => {
                 label="Due Date"
                 type="date"
                 value={formData.dueDate}
+                error={errors.dueDate}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
@@ -290,16 +347,12 @@ const handleSubmit = async (e) => {
                   gap-3 pt-4
                 "
               >
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={onClose}
-                >
+                <Button type="button" variant="ghost" onClick={onClose}>
                   Cancel
                 </Button>
 
                 <Button type="submit">
-                  Save Task
+                  {editingTask ? "Save Changes" : "Save Task"}
                 </Button>
               </div>
             </form>

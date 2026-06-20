@@ -199,20 +199,20 @@ function CommandPalette() {
                   onChange={(e) =>
                     setQuery(e.target.value)
                   }
-className="
-  w-full bg-transparent
+                  className="
+                    w-full bg-transparent
 
-  py-1
+                    py-1
 
-  text-[15px]
-  text-white
+                    text-[15px]
+                    text-white
 
-  outline-none
+                    outline-none
 
-  placeholder:text-zinc-500
+                    placeholder:text-zinc-500
 
-  caret-blue-400
-"
+                    caret-blue-400
+                  "
                 />
 
                 <div

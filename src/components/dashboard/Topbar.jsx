@@ -9,6 +9,7 @@ import { useNotificationPanelStore } from "../../store/notificationPanelStore";
 function Topbar({ setSidebarOpen }) {
   const [avatarOpen, setAvatarOpen] = useState(false);
   const avatarButtonRef = useRef(null); // 👈 ref on the avatar button
+  const bellButtonRef = useRef(null); // 👈 ref on the bell button
 
   const notifications = useNotificationStore((s) => s.notifications);
   const unreadCount   = notifications.filter((n) => !n.read).length;
@@ -71,6 +72,7 @@ function Topbar({ setSidebarOpen }) {
         {/* Notifications */}
         <div className="relative">
           <motion.button
+            ref={bellButtonRef}
             whileTap={{ scale: 0.96 }}
             onClick={() => {
               togglePanel();
@@ -100,6 +102,7 @@ function Topbar({ setSidebarOpen }) {
           <NotificationPanel
             open={notifOpen}
             onClose={closePanel}
+            bellRef={bellButtonRef}
           />
         </div>
 

@@ -15,33 +15,6 @@ import {
 function Dashboard() {
   return (
     <div className="relative pb-10">
-      {/* Ambient Background */}
-      <div
-        className="
-          pointer-events-none absolute
-          inset-0 overflow-hidden
-        "
-      >
-        <div
-          className="
-            absolute left-0 top-0
-            h-96 w-96 rounded-full
-            bg-blue-500/[0.05]
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            absolute right-0 top-40
-            h-[28rem] w-[28rem]
-            rounded-full
-            bg-purple-500/[0.05]
-            blur-3xl
-          "
-        />
-      </div>
-
       {/* Content */}
       <div className="relative z-10">
         {/* Header */}

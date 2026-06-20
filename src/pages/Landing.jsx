@@ -2,10 +2,7 @@ import { motion } from "framer-motion";
 
 import { Link } from "react-router-dom";
 
-import {
-  ArrowRight,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import Button from "../components/ui/Button";
 
@@ -25,55 +22,58 @@ function Landing() {
       >
         {/* Logo */}
         <div className="flex items-center gap-3">
-          <div
-            className="
-              flex h-10 w-10
-              items-center justify-center
-
-              rounded-2xl
-
-              border border-white/10
-
-              bg-white/[0.04]
-
-              backdrop-blur-xl
-            "
-          >
-            <Sparkles size={18} />
-          </div>
+          <svg width="36" height="36" viewBox="0 0 48 48" fill="none">
+            <rect width="48" height="48" rx="12" fill="url(#landingLogoGrad)" />
+            <defs>
+              <linearGradient
+                id="landingLogoGrad"
+                x1="0"
+                y1="0"
+                x2="48"
+                y2="48"
+              >
+                <stop offset="0%" stopColor="#3b82f6" />
+                <stop offset="100%" stopColor="#7c3aed" />
+              </linearGradient>
+            </defs>
+            <rect x="13" y="12" width="4" height="24" rx="2" fill="white" />
+            <rect x="13" y="12" width="16" height="4" rx="2" fill="white" />
+            <rect x="13" y="21" width="12" height="4" rx="2" fill="white" />
+            <rect
+              x="27"
+              y="28"
+              width="10"
+              height="4"
+              rx="2"
+              fill="white"
+              transform="rotate(-38 27 28)"
+            />
+            <rect
+              x="30"
+              y="30"
+              width="4"
+              height="4"
+              rx="2"
+              fill="white"
+              opacity="0.6"
+            />
+          </svg>
 
           <div>
-            <h1
-              className="
-                text-lg font-semibold
-                tracking-tight
-              "
-            >
+            <h1 className="text-lg font-semibold tracking-tight text-gradient">
               FlowForge
             </h1>
-
-            <p
-              className="
-                text-xs text-zinc-500
-              "
-            >
-              AI Productivity Platform
-            </p>
+            <p className="text-xs text-zinc-500">AI Productivity Platform</p>
           </div>
         </div>
-
         {/* Nav Actions */}
         <div className="flex items-center gap-3">
           <Link to="/login">
-            <Button variant="ghost">
-              Login
-            </Button>
+            <Button variant="ghost">Login</Button>
           </Link>
 
           <Link to="/signup">
-            <Button>
-              Get Started
-            </Button>
+            <Button>Get Started</Button>
           </Link>
         </div>
       </header>
@@ -126,7 +126,6 @@ function Landing() {
               bg-emerald-400
             "
           />
-
           Modern workflow management
         </motion.div>
 
@@ -160,7 +159,6 @@ function Landing() {
         >
           Build momentum.
           <br />
-
           <span
             className="
               bg-gradient-to-r
@@ -196,10 +194,8 @@ function Landing() {
             text-zinc-400
           "
         >
-          FlowForge helps teams and
-          freelancers manage tasks,
-          track productivity, and use AI
-          tools to accelerate modern work.
+          FlowForge helps teams and freelancers manage tasks, track
+          productivity, and use AI tools to accelerate modern work.
         </motion.p>
 
         {/* CTA */}
@@ -221,18 +217,12 @@ function Landing() {
           "
         >
           <Link to="/signup">
-            <Button
-              size="lg"
-              icon={ArrowRight}
-            >
+            <Button size="lg" icon={ArrowRight}>
               Start Building
             </Button>
           </Link>
 
-          <Button
-            variant="secondary"
-            size="lg"
-          >
+          <Button variant="secondary" size="lg">
             Explore Features
           </Button>
         </motion.div>

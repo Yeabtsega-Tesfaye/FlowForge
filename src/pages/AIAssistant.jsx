@@ -56,42 +56,6 @@ function AIAssistant() {
         flex-col
       "
     >
-      {/* Ambient Background */}
-      <div
-        className="
-          pointer-events-none
-          absolute inset-0 overflow-hidden
-        "
-      >
-        <div
-          className="
-            absolute left-0 top-0
-
-            h-[28rem] w-[28rem]
-
-            rounded-full
-
-            bg-blue-500/[0.05]
-
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            absolute right-0 top-40
-
-            h-[32rem] w-[32rem]
-
-            rounded-full
-
-            bg-purple-500/[0.05]
-
-            blur-3xl
-          "
-        />
-      </div>
-
       <div className="relative z-10 flex flex-1 flex-col">
         {/* Header */}
         <PageHeader

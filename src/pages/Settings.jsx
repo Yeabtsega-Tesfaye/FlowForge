@@ -20,19 +20,13 @@ function Settings() {
 
   return (
     <div className="relative pb-10">
-      {/* Ambient */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-16 top-0 h-96 w-96 rounded-full bg-blue-500/[0.04] blur-3xl" />
-        <div className="absolute -right-8 top-40 h-96 w-96 rounded-full bg-purple-500/[0.04] blur-3xl" />
-      </div>
-
       <div className="relative z-10">
         <PageHeader
           title="Settings"
           description="Manage preferences and account settings."
         />
 
-        <div className="mt-8 grid grid-cols-[200px_1fr] gap-8">
+        <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[200px_1fr] md:gap-8">
 
           {/* Left Nav */}
           <SettingsNav active={active} onChange={setActive} />

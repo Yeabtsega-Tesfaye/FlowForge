@@ -87,112 +87,120 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
           <div className="absolute bottom-0 left-10 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
         </div>
 
-        {/* Header */}
-        <div
-          className="
-            relative flex h-20 items-center
-            justify-between
-            border-b border-white/5
-            px-4
-          "
-        >
-          {/* Logo */}
-          <AnimatePresence mode="wait">
-            {isExpanded ? (
-<motion.div
-  key="full"
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  exit={{ opacity: 0 }}
-  transition={{ duration: 0.15 }}
-  className="flex items-center gap-3 overflow-hidden"
->
-  <svg width="32" height="32" viewBox="0 0 48 48" fill="none" className="flex-shrink-0">
-    <rect width="48" height="48" rx="12" fill="url(#logoGradFull)"/>
-    <defs>
-      <linearGradient id="logoGradFull" x1="0" y1="0" x2="48" y2="48">
-        <stop offset="0%" stopColor="#3b82f6"/>
-        <stop offset="100%" stopColor="#7c3aed"/>
-      </linearGradient>
-    </defs>
-    <rect x="13" y="12" width="4" height="24" rx="2" fill="white"/>
-    <rect x="13" y="12" width="16" height="4" rx="2" fill="white"/>
-    <rect x="13" y="21" width="12" height="4" rx="2" fill="white"/>
-    <rect x="27" y="28" width="10" height="4" rx="2" fill="white" transform="rotate(-38 27 28)"/>
-    <rect x="30" y="30" width="4" height="4" rx="2" fill="white" opacity="0.6"/>
-  </svg>
-  <div className="space-y-0.5">
-    <h1 className="text-xl font-semibold tracking-tight text-gradient whitespace-nowrap">
-      FlowForge
-    </h1>
-    <p className="text-xs font-medium uppercase tracking-[0.18em] text-zinc-500 whitespace-nowrap">
-      Productivity Platform
-    </p>
-  </div>
-</motion.div>
-            ) : (
-<motion.div
-  key="icon"
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  exit={{ opacity: 0 }}
-  transition={{ duration: 0.15 }}
->
-  <svg width="36" height="36" viewBox="0 0 48 48" fill="none">
-    <rect width="48" height="48" rx="12" fill="url(#logoGrad)"/>
-    <defs>
-      <linearGradient id="logoGrad" x1="0" y1="0" x2="48" y2="48">
-        <stop offset="0%" stopColor="#3b82f6"/>
-        <stop offset="100%" stopColor="#7c3aed"/>
-      </linearGradient>
-    </defs>
-    <rect x="13" y="12" width="4" height="24" rx="2" fill="white"/>
-    <rect x="13" y="12" width="16" height="4" rx="2" fill="white"/>
-    <rect x="13" y="21" width="12" height="4" rx="2" fill="white"/>
-    <rect x="27" y="28" width="10" height="4" rx="2" fill="white" transform="rotate(-38 27 28)"/>
-    <rect x="30" y="30" width="4" height="4" rx="2" fill="white" opacity="0.6"/>
-  </svg>
-</motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Mobile Close */}
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="
-              rounded-xl border border-white/5
-              bg-white/[0.03] p-2
-              text-zinc-400 transition-all duration-200
-              hover:border-white/10 hover:bg-white/[0.06] hover:text-white
-              active:scale-95 lg:hidden
-            "
-          >
-            <X size={18} />
-          </button>
-
-{/* Collapse Toggle — pinned to right edge */}
-<motion.button
-  whileTap={{ scale: 0.92 }}
-  onClick={toggleCollapsed}
+{/* Header */}
+<div
   className="
-    absolute -right-3 top-[72px]
-    hidden lg:flex
-    items-center justify-center
-    h-6 w-6 rounded-full
-    border border-white/10
-    bg-zinc-900
-    text-zinc-400
-    shadow-lg
-    transition-all duration-200
-    hover:border-white/20
-    hover:text-white
-    z-50
+    relative flex h-20 items-center
+    justify-between
+    border-b border-white/5
+    px-4
   "
 >
-  {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
-</motion.button>
+  {/* Logo */}
+  <AnimatePresence mode="wait">
+    {isExpanded ? (
+      <motion.div
+        key="full"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.15 }}
+        className="flex items-center gap-3 overflow-hidden"
+      >
+        <svg width="32" height="32" viewBox="0 0 48 48" fill="none" className="flex-shrink-0">
+          <rect width="48" height="48" rx="12" fill="url(#logoGradFull)"/>
+          <defs>
+            <linearGradient id="logoGradFull" x1="0" y1="0" x2="48" y2="48">
+              <stop offset="0%" stopColor="#3b82f6"/>
+              <stop offset="100%" stopColor="#7c3aed"/>
+            </linearGradient>
+          </defs>
+          <rect x="13" y="12" width="4" height="24" rx="2" fill="white"/>
+          <rect x="13" y="12" width="16" height="4" rx="2" fill="white"/>
+          <rect x="13" y="21" width="12" height="4" rx="2" fill="white"/>
+          <rect x="27" y="28" width="10" height="4" rx="2" fill="white" transform="rotate(-38 27 28)"/>
+          <rect x="30" y="30" width="4" height="4" rx="2" fill="white" opacity="0.6"/>
+        </svg>
+
+        {/* Hide text on mobile so logo doesn't fight X button */}
+        <div className="hidden sm:block space-y-0.5">
+          <h1 className="text-xl font-semibold tracking-tight text-gradient whitespace-nowrap">
+            FlowForge
+          </h1>
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-zinc-500 whitespace-nowrap">
+            Productivity Platform
+          </p>
         </div>
 
+        {/* Mobile: show name but smaller, no subtitle */}
+        <div className="block sm:hidden">
+          <h1 className="text-lg font-semibold tracking-tight text-gradient whitespace-nowrap">
+            FlowForge
+          </h1>
+        </div>
+      </motion.div>
+    ) : (
+      <motion.div
+        key="icon"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.15 }}
+      >
+        <svg width="36" height="36" viewBox="0 0 48 48" fill="none">
+          <rect width="48" height="48" rx="12" fill="url(#logoGrad)"/>
+          <defs>
+            <linearGradient id="logoGrad" x1="0" y1="0" x2="48" y2="48">
+              <stop offset="0%" stopColor="#3b82f6"/>
+              <stop offset="100%" stopColor="#7c3aed"/>
+            </linearGradient>
+          </defs>
+          <rect x="13" y="12" width="4" height="24" rx="2" fill="white"/>
+          <rect x="13" y="12" width="16" height="4" rx="2" fill="white"/>
+          <rect x="13" y="21" width="12" height="4" rx="2" fill="white"/>
+          <rect x="27" y="28" width="10" height="4" rx="2" fill="white" transform="rotate(-38 27 28)"/>
+          <rect x="30" y="30" width="4" height="4" rx="2" fill="white" opacity="0.6"/>
+        </svg>
+      </motion.div>
+    )}
+  </AnimatePresence>
+
+  {/* Mobile Close — lg:hidden keeps it off desktop */}
+  <button
+    onClick={() => setSidebarOpen(false)}
+    className="
+      rounded-xl border border-white/5
+      bg-white/[0.03] p-2
+      text-zinc-400 transition-all duration-200
+      hover:border-white/10 hover:bg-white/[0.06] hover:text-white
+      active:scale-95 lg:hidden
+    "
+  >
+    <X size={18} />
+  </button>
+
+  {/* Collapse Toggle — desktop only, no change */}
+  <motion.button
+    whileTap={{ scale: 0.92 }}
+    onClick={toggleCollapsed}
+    className="
+      absolute -right-3 top-[72px]
+      hidden lg:flex
+      items-center justify-center
+      h-6 w-6 rounded-full
+      border border-white/10
+      bg-zinc-900
+      text-zinc-400
+      shadow-lg
+      transition-all duration-200
+      hover:border-white/20
+      hover:text-white
+      z-50
+    "
+  >
+    {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
+  </motion.button>
+</div>
         {/* Navigation */}
         <nav className="relative flex-1 space-y-1 px-3 py-6">
           {navigation.map((item, index) => {

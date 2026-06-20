@@ -6,11 +6,7 @@ export const useNotificationStore = create(
     (set) => ({
       notifications: [],
 
-      addNotification: ({
-        title,
-        message,
-        type = "info",
-      }) =>
+      addNotification: ({ title, message, type = "info" }) =>
         set((state) => ({
           notifications: [
             {
@@ -27,24 +23,21 @@ export const useNotificationStore = create(
 
       markAsRead: (id) =>
         set((state) => ({
-          notifications: state.notifications.map(
-            (notification) =>
-              notification.id === id
-                ? {
-                    ...notification,
-                    read: true,
-                  }
-                : notification
+          notifications: state.notifications.map((notification) =>
+            notification.id === id
+              ? {
+                  ...notification,
+                  read: true,
+                }
+              : notification,
           ),
         })),
       deleteNotification: (id) =>
-  set((state) => ({
-    notifications:
-      state.notifications.filter(
-        (notification) =>
-          notification.id !== id
-      ),
-  })),
+        set((state) => ({
+          notifications: state.notifications.filter(
+            (notification) => notification.id !== id,
+          ),
+        })),
 
       clearNotifications: () =>
         set({
@@ -53,6 +46,6 @@ export const useNotificationStore = create(
     }),
     {
       name: "flowforge-notifications",
-    }
-  )
+    },
+  ),
 );

@@ -1,8 +1,4 @@
-import {
-  Trash2,
-  CheckCircle2,
-  CalendarDays,
-} from "lucide-react";
+import { Trash2, CheckCircle2, CalendarDays, Pencil } from "lucide-react";
 
 import { motion } from "framer-motion";
 
@@ -11,40 +7,33 @@ import Button from "../ui/Button";
 
 import { useTaskStore } from "../../store/taskStore";
 
-function TaskCard({ task }) {
-  const deleteTask = useTaskStore(
-    (state) => state.deleteTask
-  );
+function TaskCard({ task, onEdit }) {
+  const deleteTask = useTaskStore((state) => state.deleteTask);
 
-  const toggleTaskStatus = useTaskStore(
-    (state) => state.toggleTaskStatus
-  );
+  const toggleTaskStatus = useTaskStore((state) => state.toggleTaskStatus);
 
   const priorityVariant =
     task.priority === "high"
       ? "danger"
       : task.priority === "medium"
-      ? "warning"
-      : "success";
+        ? "warning"
+        : "success";
 
   const statusVariant =
     task.status === "completed"
       ? "success"
       : task.status === "in-progress"
-      ? "info"
-      : "default";
+        ? "info"
+        : "default";
 
   const buttonText =
-  task.status === "todo"
-    ? "Start Task"
-    : task.status === "in-progress"
-    ? "Finish Task"
-    : "Reset";
+    task.status === "todo"
+      ? "Start Task"
+      : task.status === "in-progress"
+        ? "Finish Task"
+        : "Reset";
 
-const buttonVariant =
-  task.status === "completed"
-    ? "secondary"
-    : "primary";
+  const buttonVariant = task.status === "completed" ? "secondary" : "primary";
 
   return (
     <motion.div
@@ -149,11 +138,34 @@ const buttonVariant =
           </p>
         </div>
 
-        {/* Delete */}
-        <motion.button
-          whileTap={{ scale: 0.92 }}
-          onClick={() => deleteTask(task.id)}
-          className="
+        {/* Edit and Delete */}
+        <div className="flex gap-2">
+          <motion.button
+            whileTap={{ scale: 0.92 }}
+            onClick={() => onEdit(task)}
+            className="
+            rounded-2xl border
+            border-white/5
+
+            bg-white/[0.03]
+            p-2.5
+
+            text-zinc-500
+
+            transition-all duration-300
+
+            hover:border-blue-500/20
+            hover:bg-blue-500/10
+            hover:text-blue-300
+          "
+          >
+            <Pencil size={16} />
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.92 }}
+            onClick={() => deleteTask(task.id)}
+            className="
             relative z-10
 
             rounded-2xl border
@@ -170,20 +182,17 @@ const buttonVariant =
             hover:bg-red-500/10
             hover:text-red-300
           "
-        >
-          <Trash2 size={16} />
-        </motion.button>
+          >
+            <Trash2 size={16} />
+          </motion.button>
+        </div>
       </div>
 
       {/* Badges */}
       <div className="relative mt-6 flex flex-wrap gap-2">
-        <Badge variant={priorityVariant}>
-          {task.priority}
-        </Badge>
+        <Badge variant={priorityVariant}>{task.priority}</Badge>
 
-        <Badge variant={statusVariant}>
-          {task.status}
-        </Badge>
+        <Badge variant={statusVariant}>{task.status}</Badge>
 
         <div
           className="
@@ -222,16 +231,16 @@ const buttonVariant =
           FlowForge Task
         </div>
 
-<Button
-  size="sm"
-  variant={buttonVariant}
-  icon={CheckCircle2}
-onClick={() => {
-  toggleTaskStatus(task.id);
-}}
->
-  {buttonText}
-</Button>
+        <Button
+          size="sm"
+          variant={buttonVariant}
+          icon={CheckCircle2}
+          onClick={() => {
+            toggleTaskStatus(task.id);
+          }}
+        >
+          {buttonText}
+        </Button>
       </div>
     </motion.div>
   );
