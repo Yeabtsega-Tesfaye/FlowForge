@@ -13,6 +13,8 @@ import Analytics from "../pages/Analytics";
 import AIAssistant from "../pages/AIAssistant";
 import Settings from "../pages/Settings";
 
+import Focus from "../pages/Focus";
+
 function AppRoutes() {
   return (
     <Routes>
@@ -31,6 +33,8 @@ function AppRoutes() {
         <Route path="/ai-assistant" element={<AIAssistant />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
+
+      <Route path="/focus" element={<Focus />} />
 
       {/* Fallback */}
       <Route

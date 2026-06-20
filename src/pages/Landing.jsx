@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 import { Link } from "react-router-dom";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles, CheckCircle2, BarChart3 } from "lucide-react";
 
 import Button from "../components/ui/Button";
 
@@ -271,107 +271,46 @@ function Landing() {
               to-purple-500/[0.06]
             "
           />
+{/* Fake Dashboard */}
+<div
+  className="
+    relative rounded-[1.5rem]
+    border border-white/5
+    bg-zinc-950
+    p-8
+  "
+>
+  <div className="grid gap-4 md:grid-cols-3">
 
-          {/* Fake Dashboard */}
-          <div
-            className="
-              relative rounded-[1.5rem]
+    {/* Card 1 — Tasks */}
+    <div className="rounded-2xl border border-emerald-500/10 bg-white/[0.03] p-6">
+      <div className="flex items-center gap-2">
+        <CheckCircle2 size={12} className="text-emerald-400" />
+        <div className="h-3 w-16 rounded-full bg-zinc-800" />
+      </div>
+      <div className="mt-6 h-10 w-28 rounded-xl bg-gradient-to-r from-emerald-500/25 to-emerald-500/5" />
+    </div>
 
-              border border-white/5
+    {/* Card 2 — AI */}
+    <div className="rounded-2xl border border-blue-500/10 bg-white/[0.03] p-6">
+      <div className="flex items-center gap-2">
+        <Sparkles size={12} className="text-blue-400" />
+        <div className="h-3 w-16 rounded-full bg-zinc-800" />
+      </div>
+      <div className="mt-6 h-10 w-32 rounded-xl bg-gradient-to-r from-blue-500/30 to-purple-500/30" />
+    </div>
 
-              bg-zinc-950
+    {/* Card 3 — Analytics */}
+    <div className="rounded-2xl border border-purple-500/10 bg-white/[0.03] p-6">
+      <div className="flex items-center gap-2">
+        <BarChart3 size={12} className="text-purple-400" />
+        <div className="h-3 w-16 rounded-full bg-zinc-800" />
+      </div>
+      <div className="mt-6 h-10 w-24 rounded-xl bg-gradient-to-r from-purple-500/30 to-purple-500/5" />
+    </div>
 
-              p-8
-            "
-          >
-            <div
-              className="
-                grid gap-4
-                md:grid-cols-3
-              "
-            >
-              <div
-                className="
-                  rounded-2xl
-                  border border-white/5
-
-                  bg-white/[0.03]
-
-                  p-6
-                "
-              >
-                <div
-                  className="
-                    h-3 w-20
-                    rounded-full
-                    bg-zinc-800
-                  "
-                />
-
-                <div
-                  className="
-                    mt-6 h-10 w-28
-                    rounded-xl
-                    bg-zinc-700
-                  "
-                />
-              </div>
-
-              <div
-                className="
-                  rounded-2xl
-                  border border-white/5
-
-                  bg-white/[0.03]
-
-                  p-6
-                "
-              >
-                <div
-                  className="
-                    h-3 w-20
-                    rounded-full
-                    bg-zinc-800
-                  "
-                />
-
-                <div
-                  className="
-                    mt-6 h-10 w-32
-                    rounded-xl
-                    bg-zinc-700
-                  "
-                />
-              </div>
-
-              <div
-                className="
-                  rounded-2xl
-                  border border-white/5
-
-                  bg-white/[0.03]
-
-                  p-6
-                "
-              >
-                <div
-                  className="
-                    h-3 w-20
-                    rounded-full
-                    bg-zinc-800
-                  "
-                />
-
-                <div
-                  className="
-                    mt-6 h-10 w-24
-                    rounded-xl
-                    bg-zinc-700
-                  "
-                />
-              </div>
-            </div>
-          </div>
+  </div>
+</div>
         </motion.div>
       </section>
     </div>

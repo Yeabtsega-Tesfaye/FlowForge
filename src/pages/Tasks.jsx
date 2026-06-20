@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Plus, Zap } from "lucide-react";
 
 import PageHeader from "../components/ui/PageHeader";
 import Button from "../components/ui/Button";
@@ -11,6 +12,7 @@ import TaskModal from "../components/tasks/TaskModal";
 import { useTaskStore } from "../store/taskStore";
 
 function Tasks() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
@@ -131,13 +133,29 @@ function Tasks() {
 
       {/* Modal */}
       <TaskModal
-  open={open}
-  editingTask={selectedTask}
-  onClose={() => {
-    setOpen(false);
-    setSelectedTask(null);
-  }}
-/>
+        open={open}
+        editingTask={selectedTask}
+        onClose={() => {
+          setOpen(false);
+          setSelectedTask(null);
+        }}
+      />
+
+      {/* Focus Button */}
+      <button
+        onClick={() => navigate("/focus")}
+        className="fixed bottom-8 right-8 z-40
+          flex items-center gap-2 rounded-2xl
+          border border-blue-500/20 bg-blue-500/10
+          px-4 py-2.5 text-sm font-medium text-blue-300
+          backdrop-blur-xl
+          shadow-lg shadow-blue-500/10
+          transition hover:bg-blue-500/15
+        "
+      >
+        <Zap size={15} />
+        Focus mode
+      </button>
     </div>
   );
 }
