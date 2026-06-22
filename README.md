@@ -5,7 +5,7 @@
   <p><strong>An AI-powered productivity platform for managing tasks, tracking analytics, and staying in flow.</strong></p>
 
   <p>
-    <a href="#">Live Demo</a> ·
+    <a href="https://flow-forge-sepia.vercel.app/">Live Demo</a> ·
     <a href="https://github.com/Yeabtsega-Tesfaye/FlowForge/issues">Report Bug</a> ·
     <a href="https://github.com/Yeabtsega-Tesfaye/FlowForge/issues">Request Feature</a>
   </p>
@@ -148,7 +148,7 @@ Runs at `http://localhost:5173`.
 
 ## Author
 
-**Yeabtsega Tesfaye** — Software Engineering, Woldia University
+**Yeabtsega Tesfaye**
 [GitHub](https://github.com/Yeabtsega-Tesfaye) · [Portfolio](https://yeab-tsega.netlify.app)
 
 <br />

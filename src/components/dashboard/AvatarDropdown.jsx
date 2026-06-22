@@ -12,6 +12,8 @@ import { useNotificationStore } from "../../store/notificationStore";
 import { useCommandPaletteStore } from "../../store/commandPaletteStore";
 import { useNotificationPanelStore } from "../../store/notificationPanelStore";
 
+import { useAuthStore } from "../../store/authStore";
+
 function MenuItem({ icon: Icon, label, onClick, danger, badge, kbd }) {
   return (
     <button
@@ -59,6 +61,7 @@ function AvatarDropdown({ open, onClose, avatarButtonRef }) {
   const { notifications } = useNotificationStore();
   const { openPalette }   = useCommandPaletteStore();
   const { openPanel }     = useNotificationPanelStore();
+  const { clearAuth }      = useAuthStore();
   const unreadCount       = notifications.filter((n) => !n.read).length;
 
   useEffect(() => {
@@ -163,7 +166,10 @@ function AvatarDropdown({ open, onClose, avatarButtonRef }) {
               icon={LogOut}
               label="Sign out"
               danger
-              onClick={() => go("/login")}
+              onClick={() => {
+                clearAuth();
+                go("/login");
+              }}
             />
           </div>
         </motion.div>

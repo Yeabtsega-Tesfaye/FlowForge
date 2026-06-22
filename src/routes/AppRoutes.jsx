@@ -1,19 +1,22 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-
 import DashboardLayout from "../layouts/DashboardLayout";
 import PublicLayout from "../layouts/PublicLayout";
-
 import Landing from "../pages/Landing";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
-
 import Dashboard from "../pages/Dashboard";
 import Tasks from "../pages/Tasks";
 import Analytics from "../pages/Analytics";
 import AIAssistant from "../pages/AIAssistant";
 import Settings from "../pages/Settings";
-
 import Focus from "../pages/Focus";
+import { useAuthStore } from "../store/authStore";
+
+function ProtectedRoute({ children }) {
+  const token = useAuthStore((s) => s.token);
+  if (!token) return <Navigate to="/login" replace />;
+  return children;
+}
 
 function AppRoutes() {
   return (
@@ -25,8 +28,14 @@ function AppRoutes() {
         <Route path="/signup" element={<Signup />} />
       </Route>
 
-      {/* Dashboard Routes */}
-      <Route element={<DashboardLayout />}>
+      {/* Protected Dashboard Routes */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <DashboardLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/tasks" element={<Tasks />} />
         <Route path="/analytics" element={<Analytics />} />
@@ -34,13 +43,18 @@ function AppRoutes() {
         <Route path="/settings" element={<Settings />} />
       </Route>
 
-      <Route path="/focus" element={<Focus />} />
+      {/* Focus is protected but full-screen — no DashboardLayout */}
+      <Route
+        path="/focus"
+        element={
+          <ProtectedRoute>
+            <Focus />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Fallback */}
-      <Route
-        path="*"
-        element={<Navigate to="/" replace />}
-      />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

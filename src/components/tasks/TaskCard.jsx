@@ -210,7 +210,14 @@ function TaskCard({ task, onEdit }) {
         >
           <CalendarDays size={13} />
 
-          {task.dueDate}
+          <span>
+            {task.dueDate
+              ? new Date(task.dueDate).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })
+              : "No due date"}
+          </span>
         </div>
       </div>
 

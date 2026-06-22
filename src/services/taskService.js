@@ -1,30 +1,22 @@
-const delay = (ms) =>
-  new Promise((resolve) =>
-    setTimeout(resolve, ms)
-  );
+import api from "../lib/api.js";
 
 export const taskService = {
-  async getTasks(tasks) {
-    await delay(500);
-    return tasks;
-  },
+  getTasks: () => api("/tasks"),
 
-  async createTask(task) {
-    await delay(700);
+  createTask: (task) =>
+    api("/tasks", {
+      method: "POST",
+      body: JSON.stringify(task),
+    }),
 
-    return {
-      id: Date.now(),
-      ...task,
-    };
-  },
+  updateTask: (task) =>
+    api(`/tasks/${task.id}`, {
+      method: "PUT",
+      body: JSON.stringify(task),
+    }),
 
-  async deleteTask(id) {
-    await delay(400);
-    return id;
-  },
-
-  async updateTask(task) {
-    await delay(500);
-    return task;
-  },
+  deleteTask: (id) =>
+    api(`/tasks/${id}`, {
+      method: "DELETE",
+    }),
 };
