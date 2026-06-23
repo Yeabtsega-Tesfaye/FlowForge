@@ -4,32 +4,43 @@ import { useNotificationStore } from "./notificationStore";
 
 export const useAuthStore = create(
   persist(
-    (set) => ({
-      user: null,
+    (set, get) => ({
+      user:  null,
       token: null,
 
       setAuth: async (user, token) => {
         localStorage.setItem("flowforge-token", token);
-
         set({ user, token });
-
-        // reset old data
         useNotificationStore.getState().resetStore();
-
-        // load fresh notifications for THIS user
-        await useNotificationStore
-          .getState()
-          .loadNotifications();
+        await useNotificationStore.getState().loadNotifications();
       },
 
       clearAuth: () => {
         localStorage.removeItem("flowforge-token");
-
         set({ user: null, token: null });
-
         useNotificationStore.getState().resetStore();
       },
+
+      setUser: (user) => set({ user }),
+
+      // Called on app load to rehydrate user from API
+      loadUser: async () => {
+        const token = get().token;
+        if (!token) return;
+        try {
+          const { getMe } = await import("../services/authService.js");
+          const user = await getMe();
+          set({ user });
+        } catch {
+          // Token expired or invalid — clear everything
+          get().clearAuth();
+        }
+      },
     }),
-    { name: "flowforge-auth" }
+    {
+      name: "flowforge-auth",
+      // Persist both token and user so page refresh doesn't wipe user
+      partialize: (s) => ({ token: s.token, user: s.user }),
+    }
   )
 );

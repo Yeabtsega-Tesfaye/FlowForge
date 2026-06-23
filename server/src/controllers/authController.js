@@ -9,6 +9,16 @@ const generateToken = (user) =>
     { expiresIn: "7d" }
   );
 
+const SAFE_USER_FIELDS = {
+  id:          true,
+  name:        true,
+  email:       true,
+  role:        true,
+  bio:         true,
+  preferences: true,
+  createdAt:   true,
+};
+
 export const register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -83,8 +93,8 @@ export const login = async (req, res, next) => {
 export const me = async (req, res, next) => {
   try {
     const user = await prisma.user.findUnique({
-      where: { id: req.user.id },
-      select: { id: true, name: true, email: true, role: true, createdAt: true },
+      where:  { id: req.user.id },
+      select: SAFE_USER_FIELDS,
     });
 
     if (!user) {
@@ -92,6 +102,147 @@ export const me = async (req, res, next) => {
     }
 
     res.json(user);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateMe = async (req, res, next) => {
+  try {
+    const { name, email, bio, role, password } = req.body;
+
+    // If changing email, make sure it's not taken by another user
+    if (email) {
+      const existing = await prisma.user.findUnique({ where: { email } });
+      if (existing && existing.id !== req.user.id) {
+        return res.status(409).json({ error: "Email already in use" });
+      }
+    }
+
+    const data = {
+      ...(name     && { name }),
+      ...(email    && { email }),
+      ...(bio      !== undefined && { bio }),
+      ...(role     && { role }),
+    };
+
+    // Only hash and update password if provided
+    if (password) {
+      if (password.length < 6) {
+        return res.status(400).json({ error: "Password must be at least 6 characters" });
+      }
+      data.password = await bcrypt.hash(password, 12);
+    }
+
+    const user = await prisma.user.update({
+      where:  { id: req.user.id },
+      data,
+      select: SAFE_USER_FIELDS,
+    });
+
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getPreferences = async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where:  { id: req.user.id },
+      select: { preferences: true },
+    });
+
+    // Return defaults if no preferences saved yet
+    const defaults = {
+      email: {
+        taskReminders: true,
+        weeklyDigest:  true,
+        updates:       false,
+      },
+      inApp: {
+        taskDone:      true,
+        aiSuggestions: true,
+        streakAlerts:  false,
+      },
+    };
+
+    res.json(user?.preferences ?? defaults);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updatePreferences = async (req, res, next) => {
+  try {
+    const user = await prisma.user.update({
+      where:  { id: req.user.id },
+      data:   { preferences: req.body },
+      select: { preferences: true },
+    });
+
+    res.json(user.preferences);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const exportData = async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where:  { id: req.user.id },
+      select: SAFE_USER_FIELDS,
+    });
+
+    const tasks = await prisma.task.findMany({
+      where:   { userId: req.user.id },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const notifications = await prisma.notification.findMany({
+      where:   { userId: req.user.id },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const exportPayload = {
+      exportedAt:    new Date().toISOString(),
+      user,
+      tasks,
+      notifications,
+    };
+
+    res.setHeader("Content-Disposition", "attachment; filename=flowforge-export.json");
+    res.setHeader("Content-Type", "application/json");
+    res.json(exportPayload);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const resetWorkspace = async (req, res, next) => {
+  try {
+    await prisma.task.deleteMany({
+      where: { userId: req.user.id },
+    });
+
+    await prisma.notification.deleteMany({
+      where: { userId: req.user.id },
+    });
+
+    res.json({ message: "Workspace reset successfully" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteAccount = async (req, res, next) => {
+  try {
+    // Cascade in schema handles tasks and notifications automatically
+    await prisma.user.delete({
+      where: { id: req.user.id },
+    });
+
+    res.json({ message: "Account deleted successfully" });
   } catch (err) {
     next(err);
   }

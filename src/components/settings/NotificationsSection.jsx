@@ -1,17 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "../ui/Button";
+import { getPreferences, updatePreferences } from "../../services/authService";
+import { useNotificationStore } from "../../store/notificationStore";
 
 const EMAIL_PREFS = [
-  { id: "taskReminders", label: "Task reminders",  sub: "Get emailed when a task deadline is near",         default: true  },
-  { id: "weeklyDigest",  label: "Weekly digest",   sub: "A summary of your productivity every Monday",      default: true  },
-  { id: "updates",       label: "Product updates", sub: "New features and improvements to FlowForge",       default: false },
+  { id: "taskReminders", label: "Task reminders",  sub: "Get emailed when a task deadline is near"       },
+  { id: "weeklyDigest",  label: "Weekly digest",   sub: "A summary of your productivity every Monday"    },
+  { id: "updates",       label: "Product updates", sub: "New features and improvements to FlowForge"     },
 ];
 
 const INAPP_PREFS = [
-  { id: "taskDone",   label: "Task completed", sub: "Notify when a task moves to completed",           default: true  },
-  { id: "aiSuggest",  label: "AI suggestions", sub: "Alerts when the AI assistant has insights",       default: true  },
-  { id: "streak",     label: "Streak alerts",  sub: "Remind me to keep my productivity streak",        default: false },
+  { id: "taskDone",      label: "Task completed",  sub: "Notify when a task moves to completed"          },
+  { id: "aiSuggestions", label: "AI suggestions",  sub: "Alerts when the AI assistant has insights"      },
+  { id: "streakAlerts",  label: "Streak alerts",   sub: "Remind me to keep my productivity streak"       },
 ];
+
+const DEFAULTS = {
+  email: { taskReminders: true,  weeklyDigest: true,  updates: false      },
+  inApp: { taskDone: true,       aiSuggestions: true, streakAlerts: false },
+};
 
 function Toggle({ checked, onChange }) {
   return (
@@ -57,7 +64,7 @@ function PrefGroup({ title, prefs, values, onChange }) {
               <p className="mt-0.5 text-xs text-zinc-500">{pref.sub}</p>
             </div>
             <Toggle
-              checked={values[pref.id]}
+              checked={values[pref.id] ?? false}
               onChange={(v) => onChange(pref.id, v)}
             />
           </div>
@@ -68,12 +75,46 @@ function PrefGroup({ title, prefs, values, onChange }) {
 }
 
 function NotificationsSection() {
-  const [email, setEmail] = useState(
-    Object.fromEntries(EMAIL_PREFS.map((p) => [p.id, p.default]))
-  );
-  const [inapp, setInapp] = useState(
-    Object.fromEntries(INAPP_PREFS.map((p) => [p.id, p.default]))
-  );
+  const addNotification = useNotificationStore((s) => s.addNotification);
+
+  const [email,    setEmail]    = useState(DEFAULTS.email);
+  const [inapp,    setInapp]    = useState(DEFAULTS.inApp);
+  const [loading,  setLoading]  = useState(false);
+  const [fetching, setFetching] = useState(true);
+
+  useEffect(() => {
+    getPreferences()
+      .then((prefs) => {
+        if (prefs.email) setEmail(prefs.email);
+        if (prefs.inApp) setInapp(prefs.inApp);
+      })
+      .catch(console.error)
+      .finally(() => setFetching(false));
+  }, []);
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      await updatePreferences({ email, inApp: inapp });
+      addNotification({
+        title:   "Preferences saved",
+        message: "Your notification preferences have been updated.",
+        type:    "success",
+      });
+    } catch (err) {
+      addNotification({
+        title:   "Error",
+        message: err.message,
+        type:    "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (fetching) {
+    return <div className="text-sm text-zinc-500">Loading preferences...</div>;
+  }
 
   return (
     <div className="space-y-4">
@@ -90,7 +131,9 @@ function NotificationsSection() {
         onChange={(id, v) => setInapp((prev) => ({ ...prev, [id]: v }))}
       />
       <div className="flex justify-end">
-        <Button variant="primary">Save preferences</Button>
+        <Button variant="primary" loading={loading} onClick={handleSave}>
+          Save preferences
+        </Button>
       </div>
     </div>
   );

@@ -11,14 +11,11 @@ import {
 import { useNotificationStore } from "../../store/notificationStore";
 import { useCommandPaletteStore } from "../../store/commandPaletteStore";
 import { useNotificationPanelStore } from "../../store/notificationPanelStore";
-
 import { useAuthStore } from "../../store/authStore";
 
 function MenuItem({ icon: Icon, label, onClick, danger, badge, kbd }) {
   return (
     <button
-      // Use onMouseDown instead of onClick so action fires
-      // before the dropdown unmounts from AnimatePresence
       onMouseDown={onClick}
       className={`
         flex w-full items-center gap-2.5
@@ -56,20 +53,25 @@ function MenuItem({ icon: Icon, label, onClick, danger, badge, kbd }) {
 }
 
 function AvatarDropdown({ open, onClose, avatarButtonRef }) {
-  const navigate          = useNavigate();
-  const ref               = useRef(null);
-  const { notifications } = useNotificationStore();
-  const { openPalette }   = useCommandPaletteStore();
-  const { openPanel }     = useNotificationPanelStore();
-  const { clearAuth }      = useAuthStore();
-  const unreadCount       = notifications.filter((n) => !n.read).length;
+  const navigate              = useNavigate();
+  const ref                   = useRef(null);
+  const { notifications }     = useNotificationStore();
+  const { openPalette }       = useCommandPaletteStore();
+  const { openPanel }         = useNotificationPanelStore();
+  const { clearAuth, user }   = useAuthStore();
+  const unreadCount           = notifications.filter((n) => !n.read).length;
+
+  // Derive display values from real user
+  const initials = user?.name
+    ? user.name.trim().split(/\s+/)[0][0].toUpperCase()
+    : "?";
+  const displayName  = user?.name  ?? "—";
+  const displayEmail = user?.email ?? "—";
 
   useEffect(() => {
     if (!open) return;
     const handler = (e) => {
-      // Ignore clicks on the avatar button — Topbar handles that toggle
       if (avatarButtonRef?.current?.contains(e.target)) return;
-      // Ignore clicks inside the dropdown itself
       if (ref.current && ref.current.contains(e.target)) return;
       onClose();
     };
@@ -77,7 +79,6 @@ function AvatarDropdown({ open, onClose, avatarButtonRef }) {
     return () => document.removeEventListener("mousedown", handler);
   }, [open, onClose, avatarButtonRef]);
 
-  // Close on Escape
   useEffect(() => {
     if (!open) return;
     const handler = (e) => { if (e.key === "Escape") onClose(); };
@@ -117,14 +118,14 @@ function AvatarDropdown({ open, onClose, avatarButtonRef }) {
               text-sm font-semibold text-white
               shadow-lg shadow-blue-500/20
             ">
-              Y
+              {initials}
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-white">
-                Yeabtsega Tesfaye
+                {displayName}
               </p>
               <p className="truncate text-xs text-zinc-500">
-                yeabtsega@flowforge.app
+                {displayEmail}
               </p>
             </div>
           </div>
@@ -145,11 +146,7 @@ function AvatarDropdown({ open, onClose, avatarButtonRef }) {
               icon={Command}
               label="Command palette"
               kbd="⌘K"
-              onClick={() => {
-                openPalette();
-
-                onClose();
-              }}
+              onClick={() => { openPalette(); onClose(); }}
             />
             <MenuItem
               icon={Bell}
@@ -166,10 +163,7 @@ function AvatarDropdown({ open, onClose, avatarButtonRef }) {
               icon={LogOut}
               label="Sign out"
               danger
-              onClick={() => {
-                clearAuth();
-                go("/login");
-              }}
+              onClick={() => { clearAuth(); go("/login"); }}
             />
           </div>
         </motion.div>
