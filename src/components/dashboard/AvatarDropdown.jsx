@@ -13,6 +13,8 @@ import { useCommandPaletteStore } from "../../store/commandPaletteStore";
 import { useNotificationPanelStore } from "../../store/notificationPanelStore";
 import { useAuthStore } from "../../store/authStore";
 
+import Avatar from "../ui/Avatar";
+
 function MenuItem({ icon: Icon, label, onClick, danger, badge, kbd }) {
   return (
     <button
@@ -111,15 +113,9 @@ function AvatarDropdown({ open, onClose, avatarButtonRef }) {
             border-b border-white/[0.06]
             px-4 py-3.5
           ">
-            <div className="
-              flex h-9 w-9 flex-shrink-0 items-center
-              justify-center rounded-xl
-              bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600
-              text-sm font-semibold text-white
-              shadow-lg shadow-blue-500/20
-            ">
-              {initials}
-            </div>
+<div className="rounded-xl overflow-hidden shadow-lg shadow-blue-500/20">
+  <Avatar seed={user?.avatarSeed} size={36} className="rounded-xl" />
+</div>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-white">
                 {displayName}

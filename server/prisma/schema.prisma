@@ -14,6 +14,7 @@ model User {
   password    String
   role        String   @default("user")
   bio         String?
+  avatarSeed  String  @default("flowforge")
   preferences Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

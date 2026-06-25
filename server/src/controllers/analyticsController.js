@@ -14,6 +14,14 @@ export const getAnalytics = async (req, res, next) => {
     const completed = tasks.filter((t) => t.status === "completed").length;
     const inProgress = tasks.filter((t) => t.status === "in-progress").length;
 
+    const createdThisWeek = tasks.filter((task) => {
+  const created = new Date(task.createdAt);
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+
+  return created >= weekAgo;
+}).length;
+
     // Completion rate
     const completionRate = total === 0
       ? 0
@@ -52,12 +60,49 @@ export const getAnalytics = async (req, res, next) => {
       : (total / activeDays).toFixed(1);
 
     // Stats cards data
-    const statsData = [
-      { title: "Total Tasks",  value: String(total),           change: "+12%" },
-      { title: "Completed",    value: String(completed),        change: "+8%"  },
-      { title: "Productivity", value: `${completionRate}%`,    change: "+5%"  },
-      { title: "In Progress",  value: String(inProgress),      change: "+3%"  },
-    ];
+let productivityBadge = "Needs Focus";
+
+if (completionRate >= 90) {
+  productivityBadge = "Excellent";
+} else if (completionRate >= 75) {
+  productivityBadge = "Good";
+} else if (completionRate >= 50) {
+  productivityBadge = "Average";
+}
+
+const statsData = [
+  {
+    title: "Total Tasks",
+    value: String(total),
+    badge: `${total} Total`,
+    badgeColor: "blue",
+    subtitle: `+ ${createdThisWeek} added this week`,
+  },
+
+  {
+    title: "Completed",
+    value: String(completed),
+    badge: `${completionRate}%`,
+    badgeColor: "emerald",
+    subtitle: "Completion rate",
+  },
+
+  {
+    title: "Productivity",
+    value: `${completionRate}%`,
+    badge: productivityBadge,
+    badgeColor: "purple",
+    subtitle: `${completed} of ${total} completed`,
+  },
+
+  {
+    title: "In Progress",
+    value: String(inProgress),
+    badge: inProgress > 0 ? "Active" : "Idle",
+    badgeColor: "amber",
+    subtitle: "Tasks currently in progress",
+  },
+];
 
     // Derived insights
     const weekendDays   = ["Sat", "Sun"];

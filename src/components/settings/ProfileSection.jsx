@@ -1,7 +1,9 @@
+// Add to imports:
 import { useState, useEffect } from "react";
-import { Camera } from "lucide-react";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
+import Avatar from "../ui/Avatar";
+import AvatarPicker from "../ui/AvatarPicker";
 import { getMe, updateMe } from "../../services/authService";
 import { useAuthStore } from "../../store/authStore";
 import { useNotificationStore } from "../../store/notificationStore";
@@ -10,17 +12,19 @@ function ProfileSection() {
   const { user, setUser } = useAuthStore();
   const addNotification   = useNotificationStore((s) => s.addNotification);
 
-  const [form, setForm]         = useState({
+  const [form, setForm] = useState({
     firstName: "",
     lastName:  "",
     email:     "",
     bio:       "",
     role:      "",
+    avatarSeed: "",
   });
   const [original, setOriginal] = useState(null);
   const [errors,   setErrors]   = useState({});
   const [loading,  setLoading]  = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [showPicker, setShowPicker] = useState(false);
 
   const loadProfile = () => {
     setFetching(true);
@@ -28,11 +32,12 @@ function ProfileSection() {
       .then((data) => {
         const parts = (data.name ?? "").split(" ");
         const loaded = {
-          firstName: parts[0]               ?? "",
-          lastName:  parts.slice(1).join(" ") ?? "",
-          email:     data.email             ?? "",
-          bio:       data.bio               ?? "",
-          role:      data.role              ?? "",
+          firstName:  parts[0]               ?? "",
+          lastName:   parts.slice(1).join(" ") ?? "",
+          email:      data.email             ?? "",
+          bio:        data.bio               ?? "",
+          role:       data.role              ?? "",
+          avatarSeed: data.avatarSeed        ?? "flowforge",
         };
         setForm(loaded);
         setOriginal(loaded);
@@ -45,11 +50,9 @@ function ProfileSection() {
 
   const handleChange = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
-    // Clear error on change
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
-  // Track if anything actually changed
   const isDirty = original
     ? Object.keys(form).some((k) => form[k] !== original[k])
     : false;
@@ -68,92 +71,85 @@ function ProfileSection() {
   const handleSave = async () => {
     if (!isDirty) return;
     if (!validate()) return;
-
     setLoading(true);
     try {
       const updated = await updateMe({
-        name:  `${form.firstName} ${form.lastName}`.trim(),
-        email: form.email,
-        bio:   form.bio,
-        role:  form.role,
+        name:       `${form.firstName} ${form.lastName}`.trim(),
+        email:      form.email,
+        bio:        form.bio,
+        role:       form.role,
+        avatarSeed: form.avatarSeed,
       });
-
-      // Update auth store with new user data
-      setUser({ ...user, name: updated.name, email: updated.email, bio: updated.bio });
-
-      // Update original so dirty state resets
+      setUser({ ...user, ...updated });
       const parts = (updated.name ?? "").split(" ");
       const refreshed = {
-        firstName: parts[0]               ?? "",
-        lastName:  parts.slice(1).join(" ") ?? "",
-        email:     updated.email          ?? "",
-        bio:       updated.bio            ?? "",
-        role:      updated.role           ?? "",
+        firstName:  parts[0]               ?? "",
+        lastName:   parts.slice(1).join(" ") ?? "",
+        email:      updated.email          ?? "",
+        bio:        updated.bio            ?? "",
+        role:       updated.role           ?? "",
+        avatarSeed: updated.avatarSeed     ?? form.avatarSeed,
       };
       setOriginal(refreshed);
       setForm(refreshed);
-
+      setShowPicker(false);
       addNotification({
         title:   "Profile updated",
         message: "Your profile changes have been saved.",
         type:    "success",
       });
     } catch (err) {
-      addNotification({
-        title:   "Error",
-        message: err.message,
-        type:    "error",
-      });
+      addNotification({ title: "Error", message: err.message, type: "error" });
     } finally {
       setLoading(false);
     }
   };
 
   const handleDiscard = () => {
-    if (original) {
-      setForm(original);
-      setErrors({});
-    }
+    if (original) { setForm(original); setErrors({}); setShowPicker(false); }
   };
 
   if (fetching) {
     return <div className="text-sm text-zinc-500">Loading profile...</div>;
   }
 
-  const initials = `${form.firstName?.[0] ?? ""}${form.lastName?.[0] ?? ""}`.toUpperCase() || "Y";
-
   return (
     <div className="space-y-4">
+
       {/* Avatar */}
       <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5">
         <p className="mb-4 text-xs font-medium uppercase tracking-widest text-zinc-600">
           Avatar
         </p>
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <div className="
-              flex h-14 w-14 items-center justify-center rounded-2xl
-              bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600
-              text-lg font-semibold text-white shadow-lg shadow-blue-500/20
-            ">
-              {initials}
-            </div>
-            <button className="
-              absolute -bottom-1 -right-1
-              flex h-6 w-6 items-center justify-center
-              rounded-full border border-white/10
-              bg-zinc-900 text-zinc-400 transition hover:text-white
-            ">
-              <Camera size={11} />
-            </button>
+        <div className="flex items-center gap-4 mb-4">
+          <div className="rounded-2xl overflow-hidden shadow-lg shadow-blue-500/20">
+            <Avatar seed={form.avatarSeed} size={56} />
           </div>
           <div>
             <p className="text-sm font-medium text-white">
               {form.firstName} {form.lastName}
             </p>
             <p className="mt-0.5 text-xs text-zinc-500">{form.email}</p>
+            <button
+              onClick={() => setShowPicker((p) => !p)}
+              className="
+                mt-2 text-xs text-blue-400
+                hover:text-blue-300 transition
+              "
+            >
+              {showPicker ? "Hide picker" : "Change avatar"}
+            </button>
           </div>
         </div>
+
+        {showPicker && (
+          <AvatarPicker
+            current={form.avatarSeed}
+            onSelect={(seed) =>
+              setForm((prev) => ({ ...prev, avatarSeed: seed }))
+            }
+          />
+        )}
       </div>
 
       {/* Personal Info */}
@@ -208,19 +204,10 @@ function ProfileSection() {
       </div>
 
       <div className="flex justify-end gap-2">
-        <Button
-          variant="secondary"
-          onClick={handleDiscard}
-          disabled={!isDirty}
-        >
+        <Button variant="secondary" onClick={handleDiscard} disabled={!isDirty}>
           Discard
         </Button>
-        <Button
-          variant="primary"
-          loading={loading}
-          onClick={handleSave}
-          disabled={!isDirty || loading}
-        >
+        <Button variant="primary" loading={loading} onClick={handleSave} disabled={!isDirty || loading}>
           Save changes
         </Button>
       </div>

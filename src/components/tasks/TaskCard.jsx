@@ -7,7 +7,7 @@ import Button from "../ui/Button";
 
 import { useTaskStore } from "../../store/taskStore";
 
-function TaskCard({ task, onEdit }) {
+function TaskCard({ task, onClick, onEdit }) {
   const deleteTask = useTaskStore((state) => state.deleteTask);
 
   const toggleTaskStatus = useTaskStore((state) => state.toggleTaskStatus);
@@ -57,6 +57,7 @@ function TaskCard({ task, onEdit }) {
 
         hover:border-white/10
       "
+    onClick={onClick}
     >
       {/* Glow */}
       <div
@@ -142,7 +143,10 @@ function TaskCard({ task, onEdit }) {
         <div className="flex gap-2">
           <motion.button
             whileTap={{ scale: 0.92 }}
-            onClick={() => onEdit(task)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(task);
+            }}
             className="
             rounded-2xl border
             border-white/5
@@ -164,7 +168,10 @@ function TaskCard({ task, onEdit }) {
 
           <motion.button
             whileTap={{ scale: 0.92 }}
-            onClick={() => deleteTask(task.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteTask(task.id);
+            }}
             className="
             relative z-10
 
@@ -242,7 +249,8 @@ function TaskCard({ task, onEdit }) {
           size="sm"
           variant={buttonVariant}
           icon={CheckCircle2}
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             toggleTaskStatus(task.id);
           }}
         >

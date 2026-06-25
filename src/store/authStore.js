@@ -12,7 +12,6 @@ export const useAuthStore = create(
         localStorage.setItem("flowforge-token", token);
         set({ user, token });
         useNotificationStore.getState().resetStore();
-        await useNotificationStore.getState().loadNotifications();
       },
 
       clearAuth: () => {
@@ -31,6 +30,8 @@ export const useAuthStore = create(
           const { getMe } = await import("../services/authService.js");
           const user = await getMe();
           set({ user });
+
+        await useNotificationStore.getState().loadNotifications();
         } catch {
           // Token expired or invalid — clear everything
           get().clearAuth();

@@ -1,6 +1,33 @@
 import { motion } from "framer-motion";
+import {
+  CheckCircle2,
+  Plus,
+  Pencil,
+  Clock3,
+} from "lucide-react";
+
+const activityConfig = {
+  created: {
+    icon: Plus,
+    color: "text-blue-400",
+  },
+  completed: {
+    icon: CheckCircle2,
+    color: "text-emerald-400",
+  },
+  updated: {
+    icon: Pencil,
+    color: "text-amber-400",
+  },
+  progress: {
+    icon: Clock3,
+    color: "text-purple-400",
+  },
+};
 
 function ActivityFeed({ activities = [] }) {
+
+
   return (
     <div
       className="
@@ -43,56 +70,54 @@ function ActivityFeed({ activities = [] }) {
             No recent activity yet.
           </p>
         ) : (
-          activities.map((activity, index) => (
-            <motion.div
-              key={activity.id}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="
-                group/item relative flex items-start gap-4
-                overflow-hidden rounded-2xl
-                border border-white/5 bg-white/[0.03] p-4
-                transition-all duration-300
-                hover:border-white/10 hover:bg-white/[0.05]
-              "
-            >
-              <div
-                className="
-                  absolute inset-0
-                  bg-gradient-to-r from-blue-500/[0.05] to-purple-500/[0.05]
-                  opacity-0 transition-opacity duration-300
-                  group-hover/item:opacity-100
-                "
-              />
-              <div className="relative mt-1 flex flex-col items-center">
-                <div
-                  className="
-                    h-3 w-3 rounded-full bg-blue-400
-                    shadow-[0_0_12px_rgba(96,165,250,0.8)]
-                  "
-                />
-                {index !== activities.length - 1 && (
-                  <div
-                    className="
-                      mt-2 h-12 w-px
-                      bg-gradient-to-b from-blue-500/30 to-transparent
-                    "
-                  />
-                )}
-              </div>
-              <div className="relative flex-1">
-                <p className="text-sm font-medium leading-relaxed text-white">
-                  {activity.action}
-                </p>
-                <p className="mt-2 text-xs tracking-tight text-zinc-500">
-                  {activity.time}
-                </p>
-              </div>
-            </motion.div>
-          ))
+activities.map((activity, index) => {
+
+  const config =
+    activityConfig[activity.type] ||
+    activityConfig.created;
+
+  const Icon = config.icon;
+
+  return (
+    <motion.div
+      key={activity.id}
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.05 }}
+      className="
+        group/item relative flex items-start gap-4
+        overflow-hidden rounded-2xl
+        border border-white/5 bg-white/[0.03] p-4
+      "
+    >
+      <div className="relative mt-1 flex flex-col items-center">
+        <div className={config.color}>
+          <Icon size={16} />
+        </div>
+
+        {index !== activities.length - 1 && (
+          <div
+            className="
+              mt-2 h-12 w-px
+              bg-gradient-to-b from-blue-500/30 to-transparent
+            "
+          />
         )}
       </div>
+
+      <div className="relative flex-1">
+        <p className="text-sm font-medium text-white">
+          {activity.action}
+        </p>
+
+        <p className="mt-2 text-xs text-zinc-500">
+          {activity.time}
+        </p>
+      </div>
+    </motion.div>
+  );
+})
+        )}      </div>
     </div>
   );
 }

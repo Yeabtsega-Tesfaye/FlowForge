@@ -1,10 +1,6 @@
 import { motion } from "framer-motion";
 
-function StatCard({
-  title,
-  value,
-  change,
-}) {
+function StatCard({ title, value, badge, badgeColor, subtitle, icon: Icon }) {
   return (
     <motion.div
       whileHover={{ y: -4 }}
@@ -48,14 +44,17 @@ function StatCard({
 
       <div className="relative flex items-start justify-between">
         <div>
-          <p
-            className="
-              text-sm font-medium
-              tracking-tight text-zinc-400
-            "
-          >
-            {title}
-          </p>
+<div className="flex items-center gap-3 mb-3">
+  {Icon && (
+    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/10">
+      <Icon size={18} className="text-zinc-300" />
+    </div>
+  )}
+
+  <p className="text-sm font-medium tracking-tight text-zinc-400 leading-none flex items-center">
+    {title}
+  </p>
+</div>
 
           <h3
             className="
@@ -66,28 +65,38 @@ function StatCard({
           >
             {value}
           </h3>
+
+          <p
+            className="
+    mt-2
+    text-sm
+    text-zinc-500
+  "
+          >
+            {subtitle}
+          </p>
         </div>
 
         {/* Change Badge */}
         <div
-          className="
-            rounded-full border
-            border-emerald-500/10
+          className={`
+    rounded-full border px-3 py-1.5
+    text-xs font-semibold tracking-tight
 
-            bg-emerald-500/10
+    ${
+      badgeColor === "blue"
+        ? "border-blue-500/10 bg-blue-500/10 text-blue-300 shadow-blue-500/10"
+        : badgeColor === "emerald"
+          ? "border-emerald-500/10 bg-emerald-500/10 text-emerald-300 shadow-emerald-500/10"
+          : badgeColor === "purple"
+            ? "border-purple-500/10 bg-purple-500/10 text-purple-300 shadow-purple-500/10"
+            : "border-amber-500/10 bg-amber-500/10 text-amber-300 shadow-amber-500/10"
+    }
 
-            px-3 py-1.5
-
-            text-xs font-semibold
-            tracking-tight
-
-            text-emerald-300
-
-            shadow-lg
-            shadow-emerald-500/10
-          "
+    shadow-lg
+  `}
         >
-          {change}
+          {badge}
         </div>
       </div>
 

@@ -4,6 +4,15 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { navigation } from "../../data/navigation";
 import { useSidebarStore } from "../../store/sidebarStore";
+import { useAuthStore } from "../../store/authStore";
+
+import Avatar from "../ui/Avatar";
+
+
+function getInitials(name) {
+  if (!name) return "?";
+  return name.trim().split(/\s+/)[0][0].toUpperCase();
+}
 
 function Tooltip({ label, show }) {
   if (!show) return null;
@@ -39,6 +48,9 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
   const { collapsed, toggleCollapsed } = useSidebarStore();
   const [hoveredItem, setHoveredItem] = useState(null);
   const [isHoveringCollapsed, setIsHoveringCollapsed] = useState(false);
+
+  const user = useAuthStore((s) => s.user);
+  const initials = getInitials(user?.name);
 
   // When collapsed + hovering sidebar, show expanded temporarily
   const isExpanded = !collapsed || isHoveringCollapsed;
@@ -328,17 +340,11 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
             <div className={`relative flex items-center ${isExpanded ? "gap-3" : "justify-center"}`}>
               {/* Avatar */}
-              <div
-                className="
-                  flex h-10 w-10 flex-shrink-0 items-center
-                  justify-center rounded-2xl
-                  bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600
-                  text-sm font-semibold text-white
-                  shadow-lg shadow-blue-500/20
-                "
-              >
-                Y
-              </div>
+<Avatar
+  seed={user?.avatarSeed}
+  size={40}
+  className="flex-shrink-0 rounded-2xl shadow-lg shadow-blue-500/20"
+/>
 
               {/* User Info — only when expanded */}
               <AnimatePresence>
@@ -351,10 +357,10 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
                     className="min-w-0 overflow-hidden"
                   >
                     <p className="truncate text-sm font-semibold text-white whitespace-nowrap">
-                      Yeabtsega
+                      {user?.name}
                     </p>
                     <p className="truncate text-xs text-zinc-500 whitespace-nowrap">
-                      Software Engineer
+                      {user?.role}
                     </p>
                   </motion.div>
                 )}

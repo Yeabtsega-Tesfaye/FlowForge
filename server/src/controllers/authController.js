@@ -17,11 +17,13 @@ const SAFE_USER_FIELDS = {
   bio:         true,
   preferences: true,
   createdAt:   true,
+  avatarSeed:  true,
 };
 
 export const register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
+    const seed = `${name.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`;
 
     if (!name || !email || !password) {
       return res.status(400).json({ error: "All fields are required" });
@@ -39,7 +41,7 @@ export const register = async (req, res, next) => {
     const hashed = await bcrypt.hash(password, 12);
 
     const user = await prisma.user.create({
-      data: { name, email, password: hashed },
+      data: { name, email, password: hashed, avatarSeed: seed },
     });
 
     const token = generateToken(user);
@@ -50,6 +52,7 @@ export const register = async (req, res, next) => {
         id:    user.id,
         name:  user.name,
         email: user.email,
+        avatarSeed: user.avatarSeed,
       },
     });
   } catch (err) {
@@ -83,6 +86,7 @@ export const login = async (req, res, next) => {
         id:    user.id,
         name:  user.name,
         email: user.email,
+        avatarSeed: user.avatarSeed,
       },
     });
   } catch (err) {
@@ -109,7 +113,7 @@ export const me = async (req, res, next) => {
 
 export const updateMe = async (req, res, next) => {
   try {
-    const { name, email, bio, role, password } = req.body;
+    const { name, email, bio, role, password, avatarSeed } = req.body;
 
     // If changing email, make sure it's not taken by another user
     if (email) {
@@ -124,6 +128,7 @@ export const updateMe = async (req, res, next) => {
       ...(email    && { email }),
       ...(bio      !== undefined && { bio }),
       ...(role     && { role }),
+      ...(avatarSeed && { avatarSeed }),
     };
 
     // Only hash and update password if provided
