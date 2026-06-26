@@ -1,31 +1,26 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Zap } from "lucide-react";
+
+import { useTaskUIStore } from "../store/taskModalStore";
 
 import PageHeader from "../components/ui/PageHeader";
 import Button from "../components/ui/Button";
 import TaskCard from "../components/tasks/TaskCard";
 import TaskFilterBar from "../components/tasks/TaskFilterBar";
-import TaskModal from "../components/tasks/TaskModal";
-import TaskDetailsModal from "../components/tasks/TaskDetailsModal";
 
 import { useTaskStore } from "../store/taskStore";
 
 function Tasks() {
   const navigate = useNavigate();
 
-  // Create / Edit Modal
-  const [taskModalOpen, setTaskModalOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState(null);
-
-  // Details Modal
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const [detailsTask, setDetailsTask] = useState(null);
+  const { openTask } = useTaskUIStore();
 
   const tasks = useTaskStore((state) => state.tasks);
   const filter = useTaskStore((state) => state.filter);
   const loading = useTaskStore((state) => state.loading);
   const loadTasks = useTaskStore((state) => state.loadTasks);
+  const onStatusChange = useTaskStore((state) => state.toggleTaskStatus);
 
   useEffect(() => {
     loadTasks();
@@ -35,27 +30,6 @@ function Tasks() {
     if (filter === "all") return tasks;
     return tasks.filter((task) => task.status === filter);
   }, [tasks, filter]);
-
-  const openTaskDetails = (task) => {
-    setDetailsTask(task);
-    setDetailsOpen(true);
-  };
-
-  const closeTaskDetails = () => {
-    setDetailsOpen(false);
-    setDetailsTask(null);
-  };
-
-  const handleEditTask = (task) => {
-    setEditingTask(task);
-    setTaskModalOpen(true);
-    setDetailsOpen(false); // IMPORTANT: close details modal
-  };
-
-  const closeTaskModal = () => {
-    setTaskModalOpen(false);
-    setEditingTask(null);
-  };
 
   return (
     <div className="relative pb-10">
@@ -69,8 +43,7 @@ function Tasks() {
         <Button
           icon={Plus}
           onClick={() => {
-            setEditingTask(null);
-            setTaskModalOpen(true);
+            openTask(null, "create")
           }}
         >
           Deploy Task
@@ -94,8 +67,8 @@ function Tasks() {
             <TaskCard
               key={task.id}
               task={task}
-              onClick={() => openTaskDetails(task)}
-              onEdit={handleEditTask}
+              onClick={() => openTask(task, "details")}
+              onEdit={() => openTask(task, "edit")}
             />
           ))}
         </div>
@@ -139,22 +112,6 @@ function Tasks() {
           </div>
         </div>
       )}
-
-      {/* Create / Edit Modal */}
-      <TaskModal
-        open={taskModalOpen}
-        editingTask={editingTask}
-        onClose={closeTaskModal}
-      />
-
-      {/* Task Details */}
-      <TaskDetailsModal
-        open={detailsOpen}
-        task={detailsTask}
-        onClose={closeTaskDetails}
-        onEdit={handleEditTask} // Pass the handleEditTask function to TaskDetailsModal
-      />
-
       {/* Focus Button */}
       <button
         onClick={() => navigate("/focus")}

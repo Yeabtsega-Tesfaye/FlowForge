@@ -26,6 +26,14 @@ function Topbar({ setSidebarOpen }) {
 
   const user = useAuthStore((s) => s.user);
 
+  const [detailsTask, setDetailsTask] = useState(null);
+const [detailsOpen, setDetailsOpen] = useState(false);
+
+const handleOpenTask = (task) => {
+    setDetailsTask(task);
+    setDetailsOpen(true);
+};
+
   return (
     <>
       <header
@@ -148,7 +156,7 @@ function Topbar({ setSidebarOpen }) {
         </div>
       </header>
 
-      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} onOpenTask={handleOpenTask} />
     </>
   );
 }

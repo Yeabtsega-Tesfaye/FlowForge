@@ -78,9 +78,9 @@ function NotificationPanel({ open, onClose, bellRef }) {
                 ? `fixed bottom-0 left-0 right-0 z-50
                    flex flex-col max-h-[75vh] rounded-t-3xl
                    border-t border-white/10 bg-zinc-950 shadow-2xl`
-                : `fixed z-50 w-[380px] overflow-hidden rounded-3xl
+                : `fixed z-50 w-[380px] max-h-[386px] overflow-hidden rounded-3xl
                    border border-white/10
-                   bg-zinc-950/95 shadow-2xl backdrop-blur-2xl`
+                   bg-zinc-950/95 shadow-2xl backdrop-blur-2xl flex flex-col`
             }
           >
             {/* Drag handle — mobile only */}
@@ -115,7 +115,7 @@ function NotificationPanel({ open, onClose, bellRef }) {
             </div>
 
             {/* Scrollable content */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto min-h-0">
               {notifications.length === 0 ? (
                 <div className="p-10 text-center text-sm text-zinc-500">
                   No notifications yet

@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, CheckSquare, ArrowRight } from "lucide-react";
 import { useTaskStore } from "../../store/taskStore";
 
+import { useTaskUIStore } from "../../store/taskModalStore";
+
 function fuzzy(str, query) {
   const s = str.toLowerCase();
   const q = query.toLowerCase().trim();
@@ -28,8 +30,11 @@ function score(title, query) {
   return 0;
 }
 
-export default function SearchModal({ open, onClose }) {
+export default function SearchModal({ open, onClose, onOpenTask }) {
   const { tasks } = useTaskStore();
+
+const { openTask } = useTaskUIStore();
+const toggleTaskStatus = useTaskStore((s) => s.toggleTaskStatus);
 
   const [query, setQuery] = useState("");
   const [cursor, setCursor] = useState(0);
@@ -112,10 +117,10 @@ export default function SearchModal({ open, onClose }) {
     setCursor(0);
   }, [query]);
 
-  function selectItem(task) {
-    onClose();
-    console.log("selected:", task);
-  }
+function selectItem(task) {
+  onClose();
+  openTask(task, "details");
+}
 
   return (
     <AnimatePresence>

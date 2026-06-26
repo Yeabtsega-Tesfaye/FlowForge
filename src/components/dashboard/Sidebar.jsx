@@ -81,7 +81,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
         onMouseEnter={() => collapsed && setIsHoveringCollapsed(true)}
         onMouseLeave={() => setIsHoveringCollapsed(false)}
         className={`
-          fixed inset-y-0 left-0 z-50
+          fixed inset-y-0 left-0 z-40
           flex flex-col
           border-r border-white/10
           bg-zinc-950/80

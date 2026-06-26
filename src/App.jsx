@@ -10,6 +10,11 @@ import { useCommandPaletteStore } from "./store/commandPaletteStore";
 import { useSearchModalStore } from "./store/searchModalStore";
 import { useAuthStore } from "./store/authStore";
 
+import { useTaskUIStore } from "./store/taskModalStore";
+import TaskDetailsModal from "./components/tasks/TaskDetailsModal";
+import TaskModal from "./components/tasks/TaskModal";
+import { useTaskStore } from "./store/taskStore";
+
 function App() {
   useUserInit();
 
@@ -25,9 +30,16 @@ function App() {
     closeSearch,
   } = useSearchModalStore();
 
-    const loadUser = useAuthStore((s) => s.loadUser);
+  const { selectedTaskId, mode, closeTask, openTask } =
+    useTaskUIStore();
 
-  // Rehydrate user from API on every page load
+  const tasks = useTaskStore((s) => s.tasks);
+
+  const selectedTask = tasks.find((t) => t.id === selectedTaskId);
+
+  const toggleTaskStatus = useTaskStore((s) => s.toggleTaskStatus);
+  const loadUser = useAuthStore((s) => s.loadUser);
+
   useEffect(() => {
     loadUser();
   }, []);
@@ -36,31 +48,19 @@ function App() {
     const handler = (e) => {
       const key = e.key.toLowerCase();
 
-      // Ctrl/Cmd + K → Command Palette
       if ((e.ctrlKey || e.metaKey) && key === "k") {
         e.preventDefault();
-
-        commandOpen
-          ? closePalette()
-          : openPalette();
-
-        return;
+        commandOpen ? closePalette() : openPalette();
       }
 
-      // Ctrl/Cmd + F → Task Search
       if ((e.ctrlKey || e.metaKey) && key === "f") {
         e.preventDefault();
-
-        searchOpen
-          ? closeSearch()
-          : openSearch();
+        searchOpen ? closeSearch() : openSearch();
       }
     };
 
     document.addEventListener("keydown", handler);
-
-    return () =>
-      document.removeEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
   }, [
     commandOpen,
     searchOpen,
@@ -72,6 +72,25 @@ function App() {
 
   return (
     <>
+      {/* TASK DETAILS MODAL */}
+      <TaskDetailsModal
+        open={mode === "details"}
+        task={selectedTask}
+        onClose={closeTask}
+        onEdit={() => openTask(selectedTask, "edit")}
+        onStatusChange={(task) =>
+          toggleTaskStatus(task.id)
+        }
+      />
+
+      {/* TASK CREATE / EDIT MODAL */}
+      <TaskModal
+        open={mode === "create" || mode === "edit"}
+        editingTask={mode === "edit" ? selectedTask : null}
+        onClose={closeTask}
+      />
+
+      {/* GLOBAL MODALS */}
       <CommandPalette
         open={commandOpen}
         onClose={closePalette}

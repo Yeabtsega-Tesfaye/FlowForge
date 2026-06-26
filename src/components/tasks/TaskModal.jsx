@@ -36,7 +36,7 @@ function TaskModal({ open, onClose, editingTask = null }) {
         title: editingTask.title,
         description: editingTask.description,
         priority: editingTask.priority,
-        dueDate: editingTask.dueDate,
+        dueDate: editingTask.dueDate.split("T")[0],
       });
     } else {
       setFormData({
@@ -122,6 +122,7 @@ function TaskModal({ open, onClose, editingTask = null }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          onClick={onClose}
           className="
             fixed inset-0 z-50
 
@@ -153,6 +154,7 @@ function TaskModal({ open, onClose, editingTask = null }) {
             transition={{
               duration: 0.25,
             }}
+            onClick={(e) => e.stopPropagation()}
             className="
               relative overflow-hidden
 

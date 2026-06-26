@@ -59,6 +59,38 @@ export const getAnalytics = async (req, res, next) => {
       ? 0
       : (total / activeDays).toFixed(1);
 
+
+      const getFlowLevel = (score) => {
+  if (score >= 90) return "Elite";
+  if (score >= 75) return "Excellent";
+  if (score >= 60) return "Good";
+  if (score >= 40) return "Average";
+  return "Needs Focus";
+};
+
+const consistency =
+  Math.round((activeDays / 7) * 100);
+
+const taskVolume =
+  Math.min(completed * 5, 100);
+
+const flowScore = Math.round(
+  completionRate * 0.5 +
+  consistency * 0.3 +
+  taskVolume * 0.2
+);
+
+const flowLevel = getFlowLevel(flowScore);
+
+console.log({
+  total,
+  completed,
+  completionRate,
+  consistency,
+  taskVolume,
+  flowScore,
+});
+
     // Stats cards data
 let productivityBadge = "Needs Focus";
 
@@ -170,8 +202,11 @@ const statsData = [
       derivedStats,
       productivityData,
       insights,
+      flowScore,
+      flowLevel,
     });
   } catch (err) {
     next(err);
   }
+  
 };

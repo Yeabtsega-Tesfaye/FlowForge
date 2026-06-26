@@ -17,7 +17,7 @@ function TaskDetailsModal({
   onClose,
   task,
   onEdit,
-  onToggleComplete,
+  onStatusChange,
 }) {
   if (!task) return null;
 
@@ -36,6 +36,18 @@ function TaskDetailsModal({
     completed:
       "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
   };
+
+const buttonText =
+  task.status === "todo"
+    ? "Start Task"
+    : task.status === "in-progress"
+      ? "Finish Task"
+      : "Reset";
+
+const ButtonIcon =
+  task.status === "completed"
+    ? Circle
+    : CheckCircle2;
 
   return (
     <AnimatePresence>
@@ -145,7 +157,6 @@ function TaskDetailsModal({
             onClick={(e) => {
               e.stopPropagation();
               onEdit(task);
-              onClose();
             }}
             className="
             rounded-2xl border
@@ -218,7 +229,12 @@ function TaskDetailsModal({
                       Due Date
                     </p>
 
-                    <p>{task.dueDate || "No due date"}</p>
+                    <p>            {task.dueDate
+              ? new Date(task.dueDate).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })
+              : "No due date"}</p>
                   </div>
                 </div>
 
@@ -231,7 +247,12 @@ function TaskDetailsModal({
                     </p>
 
                     <p>
-                      {new Date(task.createdAt).toLocaleDateString()}
+                                  {task.createdAt
+              ? new Date(task.createdAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })
+              : "No created date"}
                     </p>
                   </div>
                 </div>
@@ -240,22 +261,11 @@ function TaskDetailsModal({
               {/* Footer */}
               <div className="mt-10 flex justify-end gap-3">
 
-                <Button onClick={() => onToggleComplete(task)}>
-                  {task.status === "completed" ? (
-                    <>
-                      <Circle size={16} className="mr-2" />
-                      Reopen
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2
-                        size={16}
-                        className="mr-2"
-                      />
-                      Complete
-                    </>
-                  )}
-                </Button>
+<Button onClick={() => onStatusChange(task)}>
+  <ButtonIcon size={16} className="mr-1" />
+  {buttonText}
+</Button>
+
               </div>
             </div>
           </motion.div>

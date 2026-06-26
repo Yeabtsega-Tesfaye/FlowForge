@@ -1,62 +1,58 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+
 import PageHeader from "../components/ui/PageHeader";
 import StatCard from "../components/dashboard/StatCard";
 import ActivityFeed from "../components/dashboard/ActivityFeed";
 import ChartCard from "../components/dashboard/ChartCard";
 import TodayFocus from "../components/dashboard/TodayFocus";
 import QuickActions from "../components/dashboard/QuickActions";
-import TaskModal from "../components/tasks/TaskModal";
-import TaskDetailsModal from "../components/tasks/TaskDetailsModal";
+import FlowScore from "../components/dashboard/FlowScore";
 
 import { getAnalyticsData } from "../services/analyticsService";
 import { getActivityData } from "../services/activityService";
+
 import { useTaskStore } from "../store/taskStore";
-
-
+import { useTaskUIStore } from "../store/taskModalStore";
 
 function Dashboard() {
   const loadTasks = useTaskStore((state) => state.loadTasks);
-
-useEffect(() => {
-  loadTasks();
-}, [loadTasks]);
-
-
   const tasks = useTaskStore((state) => state.tasks);
-  const [openTaskModal, setOpenTaskModal] = useState(false);
-  const [selectedTaskDetails, setSelectedTaskDetails] = useState(null);
-  const [detailsOpen, setDetailsOpen] = useState(false);
+
+  const openTask = useTaskUIStore((s) => s.openTask);
 
   const [data, setData] = useState({
     statsData: [],
     productivityData: [],
   });
 
-  const openRandomTask = () => {
-  if (!tasks.length) return;
-
-  const randomTask =
-    tasks[Math.floor(Math.random() * tasks.length)];
-
-  setSelectedTaskDetails(randomTask);
-  setDetailsOpen(true);
-};
-
   const [activity, setActivity] = useState([]);
 
   useEffect(() => {
+    loadTasks();
+
     getAnalyticsData()
       .then((res) => setData((prev) => ({ ...prev, ...res })))
       .catch(console.error);
 
-    getActivityData().then(setActivity).catch(console.error);
+    getActivityData()
+      .then(setActivity)
+      .catch(console.error);
   }, []);
+
+  const openRandomTask = () => {
+    if (!tasks.length) return;
+
+    const random =
+      tasks[Math.floor(Math.random() * tasks.length)];
+
+    openTask(random, "details");
+  };
 
   return (
     <div className="relative pb-10">
       <div className="relative z-10">
-        {/* Header */}
+
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -70,46 +66,31 @@ useEffect(() => {
         {/* STATS */}
         <motion.div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {data.statsData.map((stat) => (
-            <StatCard
-              key={stat.title}
-              title={stat.title}
-              value={stat.value}
-              badge={stat.badge}
-              badgeColor={stat.badgeColor}
-              subtitle={stat.subtitle}
-            />
+            <StatCard key={stat.title} {...stat} />
           ))}
         </motion.div>
 
-        <TaskModal
-          open={openTaskModal}
-          onClose={() => setOpenTaskModal(false)}
-        />
+        {/* QUICK */}
+        <motion.div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <TodayFocus tasks={tasks} />
+          <FlowScore score={data.flowScore} level={data.flowLevel}/>
 
-        {/* MAIN SECTION */}
+          <QuickActions
+            onNewTask={() => openTask(null, "create")}
+            onRandomTask={openRandomTask}
+          />
+        </motion.div>
+
+        {/* MAIN */}
         <motion.div className="mt-8 grid gap-6 xl:grid-cols-3">
           <div className="xl:col-span-2">
             <ChartCard data={data.productivityData} />
           </div>
 
           <div className="space-y-6">
-            <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-              <TodayFocus tasks={tasks} />
-              <QuickActions 
-                    onNewTask={() => setOpenTaskModal(true)}
-                    onRandomTask={openRandomTask}
-                />
-            </div>
             <ActivityFeed activities={activity} />
           </div>
-          <TaskDetailsModal
-  open={detailsOpen}
-  task={selectedTaskDetails}
-  onClose={() => {
-    setDetailsOpen(false);
-    setSelectedTaskDetails(null);
-  }}
-/>
+
         </motion.div>
       </div>
     </div>
