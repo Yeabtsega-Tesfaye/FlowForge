@@ -12,15 +12,29 @@ import {
 import { useTaskStore } from "../../store/taskStore";
 import Button from "../ui/Button";
 
-function TaskDetailsModal({
-  open,
-  onClose,
-  task,
-  onEdit,
-  onStatusChange,
-}) {
+const formatCreatedAt = (dateStr) => {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  });
+};
+
+const formatDueDate = (dateStr) => {
+  if (!dateStr) return null;
+  const [year, month, day] = dateStr.split("T")[0].split("-");
+  return new Date(+year, +month - 1, +day).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+};
+
+function TaskDetailsModal({ open, onClose, task, onEdit, onStatusChange }) {
   if (!task) return null;
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const deleteTask = useTaskStore((state) => state.deleteTask);
 
   const priorityStyles = {
@@ -31,23 +45,18 @@ function TaskDetailsModal({
 
   const statusStyles = {
     todo: "bg-zinc-500/10 text-zinc-300 border-zinc-500/20",
-    "in-progress":
-      "bg-blue-500/10 text-blue-300 border-blue-500/20",
-    completed:
-      "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
+    "in-progress": "bg-blue-500/10 text-blue-300 border-blue-500/20",
+    completed: "bg-emerald-500/10 text-emerald-300 border-emerald-500/20",
   };
 
-const buttonText =
-  task.status === "todo"
-    ? "Start Task"
-    : task.status === "in-progress"
-      ? "Finish Task"
-      : "Reset";
+  const buttonText =
+    task.status === "todo"
+      ? "Start Task"
+      : task.status === "in-progress"
+        ? "Finish Task"
+        : "Reset";
 
-const ButtonIcon =
-  task.status === "completed"
-    ? Circle
-    : CheckCircle2;
+  const ButtonIcon = task.status === "completed" ? Circle : CheckCircle2;
 
   return (
     <AnimatePresence>
@@ -151,14 +160,14 @@ const ButtonIcon =
                   </div>
                 </div>
 
-                        <div className="flex gap-2">
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit(task);
-            }}
-            className="
+                <div className="flex gap-2">
+                  <motion.button
+                    whileTap={{ scale: 0.92 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(task);
+                    }}
+                    className="
             rounded-2xl border
             border-white/10
 
@@ -174,18 +183,18 @@ const ButtonIcon =
             hover:bg-blue-500/10
             hover:text-blue-300
           "
-          >
-            <Pencil size={16} />
-          </motion.button>
+                  >
+                    <Pencil size={16} />
+                  </motion.button>
 
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={(e) => {
-              e.stopPropagation();
-              deleteTask(task.id);
-              onClose();
-            }}
-            className="
+                  <motion.button
+                    whileTap={{ scale: 0.92 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteTask(task.id);
+                      onClose();
+                    }}
+                    className="
             relative z-10
 
             rounded-2xl border
@@ -202,17 +211,15 @@ const ButtonIcon =
             hover:bg-red-500/10
             hover:text-red-300
           "
-          >
-            <Trash2 size={16} />
-          </motion.button>
-        </div>
+                  >
+                    <Trash2 size={16} />
+                  </motion.button>
+                </div>
               </div>
 
               {/* Description */}
               <div className="mt-8">
-                <p className="text-sm font-medium text-zinc-400">
-                  Description
-                </p>
+                <p className="text-sm font-medium text-zinc-400">Description</p>
 
                 <p className="mt-3 leading-7 text-zinc-200">
                   {task.description || "No description provided."}
@@ -225,16 +232,9 @@ const ButtonIcon =
                   <Calendar size={18} className="text-blue-400" />
 
                   <div>
-                    <p className="text-xs text-zinc-500">
-                      Due Date
-                    </p>
+                    <p className="text-xs text-zinc-500">Due Date</p>
 
-                    <p>            {task.dueDate
-              ? new Date(task.dueDate).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })
-              : "No due date"}</p>
+                    <p>{formatDueDate(task.dueDate) ?? "No due date"}</p>
                   </div>
                 </div>
 
@@ -242,30 +242,18 @@ const ButtonIcon =
                   <Clock3 size={18} className="text-purple-400" />
 
                   <div>
-                    <p className="text-xs text-zinc-500">
-                      Created
-                    </p>
-
-                    <p>
-                                  {task.createdAt
-              ? new Date(task.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })
-              : "No created date"}
-                    </p>
+                    <p className="text-xs text-zinc-500">Created</p>
+                    <p>{formatCreatedAt(task.createdAt) ?? "No due date"}</p>
                   </div>
                 </div>
               </div>
 
               {/* Footer */}
               <div className="mt-10 flex justify-end gap-3">
-
-<Button onClick={() => onStatusChange(task)}>
-  <ButtonIcon size={16} className="mr-1" />
-  {buttonText}
-</Button>
-
+                <Button onClick={() => onStatusChange(task)}>
+                  <ButtonIcon size={16} className="mr-1" />
+                  {buttonText}
+                </Button>
               </div>
             </div>
           </motion.div>

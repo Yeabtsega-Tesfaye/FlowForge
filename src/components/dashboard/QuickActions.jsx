@@ -1,49 +1,39 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import TaskModal from "../tasks/TaskModal";
-import { useTaskStore } from "../../store/taskStore"
 
-import {
-  Plus,
-  Timer,
-  Shuffle,
-} from "lucide-react";
+import { Plus, Timer, Shuffle } from "lucide-react";
 
 function QuickActions({ onNewTask, onRandomTask }) {
+  const navigate = useNavigate();
 
-const navigate = useNavigate();
-const [open, setOpen] = useState(false);
-const { tasks } = useTaskStore();
-
-const actions = [
-  {
-    title: "New Task",
-    icon: Plus,
-    color: "text-blue-400",
-    bg: "bg-blue-500/10",
-    border: "border-blue-500/20",
-    onClick: onNewTask,
-  },
-  {
-    title: "Focus",
-    icon: Timer,
-    color: "text-emerald-400",
-    bg: "bg-emerald-500/10",
-    border: "border-emerald-500/20",
-    onClick: () => {
-        navigate("/focus");
+  const actions = [
+    {
+      title: "New Task",
+      icon: Plus,
+      color: "text-blue-400",
+      bg: "bg-blue-500/10",
+      border: "border-blue-500/20",
+      onClick: onNewTask,
     },
-  },
-  {
-    title: "Random Task",
-    icon: Shuffle,
-    color: "text-violet-400",
-    bg: "bg-violet-500/10",
-    border: "border-violet-500/20",
-    onClick: onRandomTask,
-  }
-];
+    {
+      title: "Focus",
+      icon: Timer,
+      color: "text-emerald-400",
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-500/20",
+      onClick: () => {
+        navigate("/focus");
+      },
+    },
+    {
+      title: "Random Task",
+      icon: Shuffle,
+      color: "text-violet-400",
+      bg: "bg-violet-500/10",
+      border: "border-violet-500/20",
+      onClick: onRandomTask,
+    },
+  ];
 
   return (
     <motion.div
@@ -71,7 +61,7 @@ const actions = [
       />
 
       <div className="relative">
-                        <div
+        <div
           className="
             inline-flex items-center rounded-full
             border border-purple-500/10 bg-purple-500/10
@@ -109,21 +99,18 @@ const actions = [
                     ${action.color}
                   `}
                 >
-<div className="rounded-lg bg-white/5">
-    <Icon size={16} />
-</div>
-                <p className="text-sm font-medium text-white">
-                  {action.title}
-                </p>
+                  <div className="rounded-lg bg-white/5">
+                    <Icon size={16} />
+                  </div>
+                  <p className="text-sm font-medium text-white">
+                    {action.title}
+                  </p>
                 </div>
               </button>
             );
           })}
         </div>
       </div>
-
-      <TaskModal open={open} onClose={() => setOpen(false)} />
-        
     </motion.div>
   );
 }

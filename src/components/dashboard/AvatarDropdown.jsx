@@ -63,10 +63,6 @@ function AvatarDropdown({ open, onClose, avatarButtonRef }) {
   const { clearAuth, user }   = useAuthStore();
   const unreadCount           = notifications.filter((n) => !n.read).length;
 
-  // Derive display values from real user
-  const initials = user?.name
-    ? user.name.trim().split(/\s+/)[0][0].toUpperCase()
-    : "?";
   const displayName  = user?.name  ?? "—";
   const displayEmail = user?.email ?? "—";
 

@@ -6,6 +6,7 @@ const prisma =
   globalForPrisma.prisma ??
   new PrismaClient();
 
+// eslint-disable-next-line no-undef
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }

@@ -37,7 +37,7 @@ function TaskFilterBar() {
               className={`
                 relative overflow-hidden
 
-                rounded-2xl px-5 py-3
+                rounded-2xl px-2 sm:px-5 py-3
 
                 text-sm font-medium
                 tracking-tight

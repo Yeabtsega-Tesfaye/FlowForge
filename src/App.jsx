@@ -42,7 +42,7 @@ function App() {
 
   useEffect(() => {
     loadUser();
-  }, []);
+  }, [loadUser]);
 
   useEffect(() => {
     const handler = (e) => {

@@ -1,6 +1,12 @@
 import prisma from "../lib/prisma.js";
 import { createNotification } from "./notificationController.js";
 
+// ── helper ──────────────────────────────────────────────
+const logActivity = (userId, taskId, taskTitle, type) =>
+  prisma.activityLog.create({
+    data: { userId, taskId, taskTitle, type },
+  });
+
 export const getTasks = async (req, res, next) => {
   try {
     const tasks = await prisma.task.findMany({
@@ -16,10 +22,7 @@ export const getTasks = async (req, res, next) => {
 export const createTask = async (req, res, next) => {
   try {
     const { title, description, priority, status, dueDate } = req.body;
-
-    if (!title) {
-      return res.status(400).json({ error: "Title is required" });
-    }
+    if (!title) return res.status(400).json({ error: "Title is required" });
 
     const task = await prisma.task.create({
       data: {
@@ -31,6 +34,9 @@ export const createTask = async (req, res, next) => {
         userId: req.user.id,
       },
     });
+
+    // log creation
+    await logActivity(req.user.id, task.id, task.title, "created");
 
     await createNotification(req.user.id, {
       title: "Task Created",
@@ -47,16 +53,11 @@ export const createTask = async (req, res, next) => {
 export const updateTask = async (req, res, next) => {
   try {
     const { id } = req.params;
-
     const existing = await prisma.task.findUnique({ where: { id } });
 
-    if (!existing) {
-      return res.status(404).json({ error: "Task not found" });
-    }
-
-    if (existing.userId !== req.user.id) {
+    if (!existing) return res.status(404).json({ error: "Task not found" });
+    if (existing.userId !== req.user.id)
       return res.status(403).json({ error: "Not authorized" });
-    }
 
     const { title, description, priority, status, dueDate } = req.body;
 
@@ -73,6 +74,14 @@ export const updateTask = async (req, res, next) => {
       },
     });
 
+    // log status change only when status actually changed
+    if (status !== undefined && status !== existing.status) {
+      const validTypes = ["in-progress", "completed"];
+      if (validTypes.includes(status)) {
+        await logActivity(req.user.id, task.id, task.title, status);
+      }
+    }
+
     await createNotification(req.user.id, {
       title: "Task Updated",
       message: `${task.title} updated successfully`,
@@ -88,16 +97,11 @@ export const updateTask = async (req, res, next) => {
 export const deleteTask = async (req, res, next) => {
   try {
     const { id } = req.params;
-
     const existing = await prisma.task.findUnique({ where: { id } });
 
-    if (!existing) {
-      return res.status(404).json({ error: "Task not found" });
-    }
-
-    if (existing.userId !== req.user.id) {
+    if (!existing) return res.status(404).json({ error: "Task not found" });
+    if (existing.userId !== req.user.id)
       return res.status(403).json({ error: "Not authorized" });
-    }
 
     await prisma.task.delete({ where: { id } });
 

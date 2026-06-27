@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import {
   CheckCircle2,
   Plus,
-  Pencil,
   Clock3,
 } from "lucide-react";
 
@@ -15,18 +14,13 @@ const activityConfig = {
     icon: CheckCircle2,
     color: "text-emerald-400",
   },
-  updated: {
-    icon: Pencil,
-    color: "text-amber-400",
-  },
-  progress: {
+  "in-progress": {
     icon: Clock3,
     color: "text-purple-400",
   },
 };
 
 function ActivityFeed({ activities = [] }) {
-
 
   return (
     <div

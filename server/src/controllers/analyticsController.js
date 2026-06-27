@@ -82,15 +82,6 @@ const flowScore = Math.round(
 
 const flowLevel = getFlowLevel(flowScore);
 
-console.log({
-  total,
-  completed,
-  completionRate,
-  consistency,
-  taskVolume,
-  flowScore,
-});
-
     // Stats cards data
 let productivityBadge = "Needs Focus";
 

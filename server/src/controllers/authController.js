@@ -5,6 +5,7 @@ import prisma from "../lib/prisma.js";
 const generateToken = (user) =>
   jwt.sign(
     { id: user.id, email: user.email },
+    // eslint-disable-next-line no-undef
     process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );

@@ -7,6 +7,15 @@ import Button from "../ui/Button";
 
 import { useTaskStore } from "../../store/taskStore";
 
+const formatDueDate = (dateStr) => {
+  if (!dateStr) return null;
+  const [year, month, day] = dateStr.split("T")[0].split("-");
+  return new Date(+year, +month - 1, +day).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+};
+
 function TaskCard({ task, onClick, onEdit }) {
   const deleteTask = useTaskStore((state) => state.deleteTask);
 
@@ -218,12 +227,7 @@ function TaskCard({ task, onClick, onEdit }) {
           <CalendarDays size={13} />
 
           <span>
-            {task.dueDate
-              ? new Date(task.dueDate).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })
-              : "No due date"}
+            {formatDueDate(task.dueDate) ?? "No due date"}
           </span>
         </div>
       </div>

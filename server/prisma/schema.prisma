@@ -21,6 +21,7 @@ model User {
 
   tasks         Task[]
   notifications Notification[]
+  activityLogs ActivityLog[]
 }
 
 model Task {
@@ -48,4 +49,15 @@ model Notification {
 
   userId String
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  taskId    String
+  taskTitle String
+  type      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

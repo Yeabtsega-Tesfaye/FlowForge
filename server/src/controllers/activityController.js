@@ -1,46 +1,39 @@
 import prisma from "../lib/prisma.js";
 
+const formatTime = (date) => {
+  const now = new Date();
+  const diffMs = now - new Date(date);
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMins < 1)   return "Just now";
+  if (diffMins < 60)  return `${diffMins} minute${diffMins > 1 ? "s" : ""} ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+  if (diffDays === 1) return "Yesterday";
+  return `${diffDays} days ago`;
+};
+
+const actionLabel = {
+  created:       (title) => `Created "${title}"`,
+  "in-progress": (title) => `Started "${title}"`,
+  completed:     (title) => `Completed "${title}"`,
+};
+
 export const getActivity = async (req, res, next) => {
   try {
-    const userId = req.user.id;
-
-    // Pull last 10 tasks ordered by most recently updated
-    const tasks = await prisma.task.findMany({
-      where: { userId },
-      orderBy: { updatedAt: "desc" },
-      take: 10,
+    const logs = await prisma.activityLog.findMany({
+      where: { userId: req.user.id },
+      orderBy: { createdAt: "desc" },
+      take: 20,
     });
 
-    const activity = tasks.map((task) => {
-      const isCompleted = task.status === "completed";
-      const isInProgress = task.status === "in-progress";
-
-      const action = isCompleted
-        ? `Completed "${task.title}"`
-        : isInProgress
-        ? `Started "${task.title}"`
-        : `Created "${task.title}"`;
-
-      const updatedAt = new Date(task.updatedAt);
-      const now = new Date();
-      const diffMs = now - updatedAt;
-      const diffMins = Math.floor(diffMs / 60000);
-      const diffHours = Math.floor(diffMins / 60);
-      const diffDays = Math.floor(diffHours / 24);
-
-      const time =
-        diffMins < 1   ? "Just now" :
-        diffMins < 60  ? `${diffMins} minutes ago` :
-        diffHours < 24 ? `${diffHours} hour${diffHours > 1 ? "s" : ""} ago` :
-        diffDays === 1 ? "Yesterday" :
-        `${diffDays} days ago`;
-
-      return {
-        id:     task.id,
-        action,
-        time,
-      };
-    });
+    const activity = logs.map((log) => ({
+      id:     log.id,
+      action: (actionLabel[log.type] ?? actionLabel.created)(log.taskTitle),
+      time:   formatTime(log.createdAt),
+      type:   log.type,
+    }));
 
     res.json(activity);
   } catch (err) {

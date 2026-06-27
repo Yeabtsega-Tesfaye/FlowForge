@@ -20,7 +20,6 @@ function Tasks() {
   const filter = useTaskStore((state) => state.filter);
   const loading = useTaskStore((state) => state.loading);
   const loadTasks = useTaskStore((state) => state.loadTasks);
-  const onStatusChange = useTaskStore((state) => state.toggleTaskStatus);
 
   useEffect(() => {
     loadTasks();

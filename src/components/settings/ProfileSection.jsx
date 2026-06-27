@@ -46,6 +46,7 @@ function ProfileSection() {
       .finally(() => setFetching(false));
   };
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadProfile(); }, []);
 
   const handleChange = (field) => (e) => {
