@@ -21,7 +21,7 @@ export const getTasks = async (req, res, next) => {
 
 export const createTask = async (req, res, next) => {
   try {
-    const { title, description, priority, status, dueDate } = req.body;
+    const { title, description, priority, status, dueDate, category } = req.body;
     if (!title) return res.status(400).json({ error: "Title is required" });
 
     const task = await prisma.task.create({
@@ -31,6 +31,7 @@ export const createTask = async (req, res, next) => {
         priority: priority ?? "medium",
         status: status ?? "todo",
         dueDate: dueDate ? new Date(dueDate) : null,
+        category: category ?? "other",
         userId: req.user.id,
       },
     });
@@ -59,7 +60,7 @@ export const updateTask = async (req, res, next) => {
     if (existing.userId !== req.user.id)
       return res.status(403).json({ error: "Not authorized" });
 
-    const { title, description, priority, status, dueDate } = req.body;
+    const { title, description, priority, status, dueDate, category } = req.body;
 
     const task = await prisma.task.update({
       where: { id },
@@ -71,6 +72,7 @@ export const updateTask = async (req, res, next) => {
         ...(dueDate !== undefined && {
           dueDate: dueDate ? new Date(dueDate) : null,
         }),
+        ...(category !== undefined && { category }),
       },
     });
 

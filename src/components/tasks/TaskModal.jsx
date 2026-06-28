@@ -10,6 +10,17 @@ import Button from "../ui/Button";
 import { useTaskStore } from "../../store/taskStore";
 import { useToastStore } from "../../store/toastStore";
 
+const CATEGORIES = [
+  "work",
+  "personal",
+  "health",
+  "learning",
+  "finance",
+  "creative",
+  "errands",
+  "other",
+];
+
 function TaskModal({ open, onClose, editingTask = null }) {
   const addTask = useTaskStore((state) => state.addTask);
   const updateTask = useTaskStore((state) => state.updateTask);
@@ -20,6 +31,7 @@ function TaskModal({ open, onClose, editingTask = null }) {
     title: "",
     description: "",
     priority: "medium",
+    catagory: "other",
     dueDate: "",
   });
 
@@ -36,6 +48,7 @@ function TaskModal({ open, onClose, editingTask = null }) {
         title: editingTask.title,
         description: editingTask.description,
         priority: editingTask.priority,
+        category: editingTask.category,
         dueDate: editingTask.dueDate.split("T")[0],
       });
     } else {
@@ -67,6 +80,10 @@ function TaskModal({ open, onClose, editingTask = null }) {
 
     if (!formData.dueDate) {
       newErrors.dueDate = "Please choose a due date.";
+    }
+
+    if (formData.dueDate && formData.dueDate < new Date().toISOString().split("T")[0]) {
+      newErrors.dueDate = "Due date cannot be in the past.";
     }
 
     setErrors(newErrors);
@@ -281,6 +298,38 @@ function TaskModal({ open, onClose, editingTask = null }) {
                 }
               />
 
+              {/* Category */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-zinc-300">
+                  Category
+                </label>
+                <select
+                  value={formData.category}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
+                  className="
+                    w-full rounded-2xl
+                    border border-white/5
+                    bg-white/[0.03]
+                    px-4 py-3
+                    text-sm text-white
+                    outline-none
+                    transition-all duration-300
+                    hover:border-white/10
+                    focus:border-blue-500/20
+                    focus:bg-white/[0.05]
+                    capitalize
+                  "
+                >
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               {/* Priority */}
               <div>
                 <label
@@ -334,6 +383,7 @@ function TaskModal({ open, onClose, editingTask = null }) {
                 type="date"
                 value={formData.dueDate}
                 error={errors.dueDate}
+                min={new Date().toISOString().split("T")[0]}
                 onChange={(e) =>
                   setFormData({
                     ...formData,

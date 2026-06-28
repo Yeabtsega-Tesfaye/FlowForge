@@ -31,6 +31,7 @@ model Task {
   priority    String
   status      String
   dueDate     DateTime?
+  category    String  @default("other")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

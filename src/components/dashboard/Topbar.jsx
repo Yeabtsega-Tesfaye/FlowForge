@@ -62,7 +62,7 @@ function Topbar({ setSidebarOpen }) {
         <button
           onClick={() => setSearchOpen(true)}
           className="
-            relative z-10 hidden w-full max-w-md md:flex
+            relative z-10 w-13 sm:w-full sm:max-w-md md:flex
             items-center gap-2
             rounded-2xl border border-white/5
             bg-white/[0.03] py-3 pl-4 pr-4
@@ -73,7 +73,7 @@ function Topbar({ setSidebarOpen }) {
           "
         >
           <Search size={16} className="shrink-0" />
-          <span className="flex-1 text-left text-sm">Search tasks…</span>
+          <span className="hidden sm:inline flex-1 text-left text-sm">Search tasks…</span>
           <span className="hidden sm:inline-flex items-center gap-1 rounded-lg border border-white/5 bg-white/[0.04] px-1.5 py-0.5 text-[11px] text-zinc-600">
             <span>⌘</span>
             <span>F</span>

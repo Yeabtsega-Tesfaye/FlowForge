@@ -11,7 +11,7 @@ export const useAuthStore = create(
       setAuth: async (user, token) => {
         localStorage.setItem("flowforge-token", token);
         set({ user, token });
-        useNotificationStore.getState().resetStore();
+        useNotificationStore.getState().loadNotifications();
       },
 
       clearAuth: () => {

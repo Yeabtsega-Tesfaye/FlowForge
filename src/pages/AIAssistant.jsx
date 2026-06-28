@@ -1,21 +1,18 @@
 import { useState } from "react";
-
 import PageHeader from "../components/ui/PageHeader";
-
 import AIEmptyState from "../components/ai/AIEmptyState";
 import AIMessageBubble from "../components/ai/AIMessageBubble";
 import AITypingIndicator from "../components/ai/AITypingIndicator";
 import AIChatInput from "../components/ai/AIChatInput";
+import api from "../lib/api";
 
 function AIAssistant() {
   const [input, setInput] = useState("");
-
   const [messages, setMessages] = useState([]);
-
   const [typing, setTyping] = useState(false);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  const handleSend = async () => {
+    if (!input.trim() || typing) return;
 
     const userMessage = {
       id: Date.now(),
@@ -23,39 +20,49 @@ function AIAssistant() {
       content: input,
     };
 
-    setMessages((prev) => [
-      ...prev,
-      userMessage,
-    ]);
-
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInput("");
-
     setTyping(true);
 
-    // Fake AI response
-    setTimeout(() => {
-      setTyping(false);
+    try {
+      const { reply } = await api("/ai/chat", {
+        method: "POST",
+        body: JSON.stringify({
+          message: input,
+          // send history excluding the message we just added
+          // so the backend doesn't double-count it
+          history: messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      });
 
-      setMessages((prev) => [
-        ...prev,
+      setMessages([
+        ...updatedMessages,
         {
           id: Date.now() + 1,
           role: "assistant",
-          content:
-            "This is a simulated AI response. Backend integration will come later.",
+          content: reply,
         },
       ]);
-    }, 1500);
+    } catch (err) {
+      setMessages([
+        ...updatedMessages,
+        {
+          id: Date.now() + 1,
+          role: "assistant",
+          content: "Something went wrong. Please try again.",
+        },
+      ]);
+    } finally {
+      setTyping(false);
+    }
   };
 
   return (
-    <div
-      className="
-        relative flex
-        min-h-[calc(100vh-120px)]
-        flex-col
-      "
-    >
+    <div className="relative flex min-h-[calc(100vh-120px)] flex-col">
       <div className="relative z-10 flex flex-1 flex-col">
         {/* Header */}
         <PageHeader
@@ -64,23 +71,11 @@ function AIAssistant() {
         />
 
         {/* Conversation */}
-        <div
-          className="
-            flex flex-1
-            flex-col
-          "
-        >
+        <div className="flex flex-1 flex-col">
           {messages.length === 0 ? (
             <AIEmptyState />
           ) : (
-            <div
-              className="
-                flex flex-1
-                flex-col gap-6
-
-                pb-8
-              "
-            >
+            <div className="flex flex-1 flex-col gap-6 pb-8">
               {messages.map((message) => (
                 <AIMessageBubble
                   key={message.id}
@@ -88,10 +83,7 @@ function AIAssistant() {
                   content={message.content}
                 />
               ))}
-
-              {typing && (
-                <AITypingIndicator />
-              )}
+              {typing && <AITypingIndicator />}
             </div>
           )}
 

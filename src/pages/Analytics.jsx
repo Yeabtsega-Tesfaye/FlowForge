@@ -7,18 +7,21 @@ import BarChartCard from "../components/analytics/BarChartCard";
 import DonutChartCard from "../components/analytics/DonutChartCard";
 import InsightsCard from "../components/analytics/InsightsCard";
 import { getAnalyticsData } from "../services/analyticsService";
+import ProgressRingCard from "../components/analytics/ProgressRingCard";
+import PriorityBreakdownCard from "../components/analytics/PriorityBreakdownCard";
+import UpcomingDeadlinesCard from "../components/analytics/UpcomingDeadlinesCard";
 
 const DONUT_COLORS = ["#3b82f6", "#1D9E75", "#7F77DD", "#52525b"];
 
 const FALLBACK = {
-  statsData:       [],
-  derivedStats:    [],
-  productivityData:[],
-  insights:        [],
+  statsData: [],
+  derivedStats: [],
+  productivityData: [],
+  insights: [],
 };
 
 function Analytics() {
-  const [data, setData]       = useState(FALLBACK);
+  const [data, setData] = useState(FALLBACK);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -93,6 +96,17 @@ function Analytics() {
         >
           <BarChartCard data={data.productivityData} />
           <InsightsCard insights={data.insights} />
+        </motion.div>
+        {/* Progress Ring + Priority + Deadlines */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.45 }}
+          className="mt-6 grid gap-6 xl:grid-cols-3"
+        >
+          <ProgressRingCard />
+          <PriorityBreakdownCard />
+          <UpcomingDeadlinesCard />
         </motion.div>
       </div>
     </div>
